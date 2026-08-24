@@ -57,6 +57,7 @@ Focused runnable examples live in `examples/`:
 - `exchange-metadata.ts`
 - `read-markets.ts`
 - `read-wallet.ts`
+- `account-activity.ts`
 - `public-trades.ts`
 - `profile.ts`
 - `withdrawal-status.ts`
@@ -102,6 +103,8 @@ Exchange methods mutate state and currently accept pre-signed request payloads. 
 request shape, while the caller owns wallet connection, nonce selection, and EIP-712 signing.
 
 Place order note: `route` is part of the signed `PlaceOrder` payload and must match the `route` field sent to the API.
+Reduce-only place and replace requests must use the matching `PlaceOrderReduceOnly` or `ReplaceOrderReduceOnly` signing
+type and send `reduce_only: true`.
 
 ```ts
 import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
@@ -197,6 +200,29 @@ const bulkCanceled = await exchange.bulkCancelOrdersByClientId({
 });
 
 console.log(bulkCanceled.results[0]?.success);
+```
+
+```ts
+const revoked = await exchange.revokeAllAgents({
+  nonce: 7,
+  signature: "0x...",
+});
+
+console.log(revoked.success);
+```
+
+Referral write signatures cover the exact `code` string submitted in the request. The API normalizes the stored code
+only after authentication.
+
+```ts
+const referralCode = await exchange.createReferralCode({
+  wallet: "0x0000000000000000000000000000000000000000",
+  code: "ALPHA",
+  nonce: 8,
+  signature: "0x...",
+});
+
+console.log(referralCode.code);
 ```
 
 ## Signing Helpers
@@ -327,6 +353,7 @@ const profile = await info.profile({
 });
 
 console.log(profile.data.username);
+console.log(profile.data.account_wallet);
 console.log(profile.data.pnl.unrealized);
 
 const profileTrades = await info.profileTrades({
@@ -340,6 +367,8 @@ console.log(profileTrades.data[0]?.realized_pnl);
 
 const realizedPnl = await info.profileRealizedPnl({
   wallet: "0xe55b5e5e38f73c30aa367d310d6247f3f9a5e86e",
+  from_ts_ms: 1_700_000_000_000,
+  to_ts_ms: 1_700_086_400_000,
 });
 
 console.log(realizedPnl.data[0]?.symbol);
@@ -356,6 +385,13 @@ const orders = await info.orders({
 
 console.log(orders.data[0]?.order_id);
 console.log(orders.pagination.count);
+
+const orderStatus = await info.orderStatus({
+  wallet: "0xe55b5e5e38f73c30aa367d310d6247f3f9a5e86e",
+  orderId: "client-order-123",
+});
+
+console.log(orderStatus.data?.status);
 ```
 
 ### Fills
@@ -381,6 +417,16 @@ const trades = await info.trades({
 
 console.log(trades.data[0]?.trade_id);
 console.log(trades.data[0]?.price);
+console.log(trades.data[0]?.taker_side);
+
+const nextTrades = trades.data[0]
+  ? await info.trades({ after_trade_id: trades.data[0].trade_id, limit: 25 })
+  : undefined;
+
+const exactTrade = trades.data[0] ? await info.trade({ tradeId: trades.data[0].trade_id }) : undefined;
+
+console.log(nextTrades?.data.length);
+console.log(exactTrade?.data.trade_id);
 
 const accountTrades = await info.trades({
   account: "0xe55b5e5e38f73c30aa367d310d6247f3f9a5e86e",
@@ -408,6 +454,27 @@ const agents = await info.authorizedAgents({
 });
 
 console.log(agents.agents[0]);
+```
+
+### Risk, Referrals, and Transfers
+
+```ts
+const wallet = "0xe55b5e5e38f73c30aa367d310d6247f3f9a5e86e";
+
+const risk = await info.riskGrid({ wallet });
+const binding = await info.referralBinding({ wallet });
+const ownedCode = await info.referralCodeByOwner({ wallet });
+const transfers = await info.transfers({
+  wallet,
+  transactionTypes: ["deposit", "withdrawal"],
+  statuses: ["completed"],
+  limit: 25,
+});
+
+console.log(risk.data?.total_initial_margin);
+console.log(binding.referrer_wallet);
+console.log(ownedCode?.code);
+console.log(transfers.page.next_cursor);
 ```
 
 ### Historical Theos
@@ -531,11 +598,13 @@ assuming every endpoint returns a raw array.
   `page`.
 - **JSON-RPC envelopes:** `instruments`, `optionSummaries`, and `orderbook` return
   `{ jsonrpc, result, error, testnet, usDiff, usIn, usOut }`.
-- **API success envelope:** `portfolio`, `profile`, `historicalTheos`, `historicalTheosBatch`, `historicalPnl`, and
-  `liquidationStatus` return `{ success, data, error }`.
+- **API success envelope:** `portfolio`, `profile`, `historicalTheos`, `historicalTheosBatch`, `historicalPnl`,
+  `liquidationStatus`, `riskGrid`, and `trade` return `{ success, data, error }`.
+- **Transfer envelope:** `transfers` returns `{ success, data, page, error }` with cursor pagination.
 - **Authorized agents and withdrawals:** `authorizedAgents` returns `{ agents }`; `withdrawalHistory` returns
   `{ withdrawals }`.
-- **Direct objects:** `exchangeInfo`, `directiveStatus`, and `rfqStatus` return their response objects directly.
+- **Direct objects:** `exchangeInfo`, `directiveStatus`, `rfqStatus`, and referral reads return their response objects
+  directly.
 
 Useful root-level types:
 
@@ -579,44 +648,58 @@ import type {
   ProfileTradesResponse,
   RealizedPnlResponse,
   RealizedPnlRow,
+  ReferralBinding,
+  ReferralCode,
+  ReferredWalletsResponse,
   RfqQuote,
   RfqStatusResponse,
+  RiskGridResponse,
   SettlementPayout,
   SettlementPayoutsResponse,
   Trade,
+  TradeResponse,
   TradesResponse,
+  TransfersResponse,
   WithdrawalHistoryResponse,
 } from "@hypercall/sdk";
 ```
 
 ## Endpoint Reference
 
-| Client method                                  | Params                                                                                                            | Response type                  |
-| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------ |
-| `info.exchangeInfo()`                          | none                                                                                                              | `ExchangeInfoResponse`         |
-| `info.markets()`                               | `{ include_instruments?: true }`                                                                                  | `MarketsResponse`              |
-| `info.markets({ include_instruments: false })` | `{ include_instruments: false }`                                                                                  | `MarketsSlimResponse`          |
-| `info.instruments(params)`                     | `{ currency, kind? }`                                                                                             | `InstrumentsResponse`          |
-| `info.optionSummaries(params)`                 | `{ currency, kind?, expiry?, includeRfqProviderQuotes?, rfqProviderQuotesLimit? }`                                | `OptionSummariesResponse`      |
-| `info.orderbook(params)`                       | `{ instrumentId, depth? }`                                                                                        | `OrderbookResponse`            |
-| `info.portfolio(params)`                       | `{ wallet }`                                                                                                      | `PortfolioResponse`            |
-| `info.profile(params)`                         | `{ wallet }`                                                                                                      | `ProfileResponse`              |
-| `info.profileTrades(params)`                   | `{ wallet, limit?, offset?, competition_id?, from_ts_ms?, to_ts_ms?, symbol? }`                                   | `ProfileTradesResponse`        |
-| `info.profileRealizedPnl(params)`              | `{ wallet, competition_id? }`                                                                                     | `RealizedPnlResponse`          |
-| `info.orders(params)`                          | `{ wallet, limit?, offset?, status? }`                                                                            | `OrdersResponse`               |
-| `info.fills(params)`                           | `{ wallet, limit?, offset? }`                                                                                     | `FillsResponse`                |
-| `info.trades(params)`                          | `{ limit?, offset? }`, `{ symbol, limit? }`, `{ underlying, limit?, offset? }`, or `{ account, limit?, offset? }` | `TradesResponse`               |
-| `info.settlementPayouts(params)`               | `{ wallet, limit?, offset?, symbol?, ledgerApplied? }`                                                            | `SettlementPayoutsResponse`    |
-| `info.authorizedAgents(params)`                | `{ wallet }`                                                                                                      | `AuthorizedAgentsResponse`     |
-| `info.directiveStatus(params)`                 | `{ directiveId }`                                                                                                 | `DirectiveStatusResponse`      |
-| `info.withdrawalHistory(params)`               | `{ wallet, limit? }`                                                                                              | `WithdrawalHistoryResponse`    |
-| `info.rfqStatus(params)`                       | `{ rfqId }`                                                                                                       | `RfqStatusResponse`            |
-| `info.historicalTheos(params)`                 | `{ instrumentName, interval, limit? }`                                                                            | `HistoricalTheosResponse`      |
-| `info.historicalTheosBatch(params)`            | `{ instrumentNames, interval, limit? }`                                                                           | `HistoricalTheosBatchResponse` |
-| `info.historicalPnl(params)`                   | `{ wallet, interval, limit?, includeAttribution? }`                                                               | `HistoricalPnlResponse`        |
-| `info.liquidationStatus(params)`               | `{ wallet }`                                                                                                      | `LiquidationStatusResponse`    |
-| `info.liquidationHistory(params)`              | `{ wallet, limit?, offset? }`                                                                                     | `LiquidationHistoryResponse`   |
-| `info.liquidations(params)`                    | `{ cursor?, limit?, wallet?, status?, state?, marginMode?, liquidationMode? }`                                    | `LiquidationsResponse`         |
+| Client method                                  | Params                                                                             | Response type                  |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------ |
+| `info.exchangeInfo()`                          | none                                                                               | `ExchangeInfoResponse`         |
+| `info.markets()`                               | `{ include_instruments?: true }`                                                   | `MarketsResponse`              |
+| `info.markets({ include_instruments: false })` | `{ include_instruments: false }`                                                   | `MarketsSlimResponse`          |
+| `info.instruments(params)`                     | `{ currency, kind? }`                                                              | `InstrumentsResponse`          |
+| `info.optionSummaries(params)`                 | `{ currency, kind?, expiry?, includeRfqProviderQuotes?, rfqProviderQuotesLimit? }` | `OptionSummariesResponse`      |
+| `info.orderbook(params)`                       | `{ instrumentId, depth? }`                                                         | `OrderbookResponse`            |
+| `info.portfolio(params)`                       | `{ wallet }`                                                                       | `PortfolioResponse`            |
+| `info.profile(params)`                         | `{ wallet }`                                                                       | `ProfileResponse`              |
+| `info.profileTrades(params)`                   | `{ wallet, limit?, offset?, from_ts_ms?, to_ts_ms?, symbol? }`                     | `ProfileTradesResponse`        |
+| `info.profileRealizedPnl(params)`              | `{ wallet, from_ts_ms?, to_ts_ms? }`                                               | `RealizedPnlResponse`          |
+| `info.orders(params)`                          | `{ wallet, limit?, offset?, status? }`                                             | `OrdersResponse`               |
+| `info.orderStatus(params)`                     | `{ wallet, orderId }`                                                              | `OrderStatusResponse`          |
+| `info.fills(params)`                           | `{ wallet, limit?, offset? }`                                                      | `FillsResponse`                |
+| `info.trades(params)`                          | offset or filtered paging, or `{ after_trade_id, limit? }` cursor paging           | `TradesResponse`               |
+| `info.trade(params)`                           | `{ tradeId }`                                                                      | `TradeResponse`                |
+| `info.riskGrid(params)`                        | `{ wallet }`                                                                       | `RiskGridResponse`             |
+| `info.referralBinding(params)`                 | `{ wallet }`                                                                       | `ReferralBinding`              |
+| `info.referralCodeByOwner(params)`             | `{ wallet }`                                                                       | `ReferralCode \| null`         |
+| `info.referralCode(params)`                    | `{ code }`                                                                         | `ReferralCode`                 |
+| `info.referredWallets(params)`                 | `{ wallet, limit?, offset? }`                                                      | `ReferredWalletsResponse`      |
+| `info.transfers(params)`                       | `{ wallet, transactionTypes?, assets?, statuses?, limit?, cursor? }`               | `TransfersResponse`            |
+| `info.settlementPayouts(params)`               | `{ wallet, limit?, offset?, symbol?, ledgerApplied? }`                             | `SettlementPayoutsResponse`    |
+| `info.authorizedAgents(params)`                | `{ wallet }`                                                                       | `AuthorizedAgentsResponse`     |
+| `info.directiveStatus(params)`                 | `{ directiveId }`                                                                  | `DirectiveStatusResponse`      |
+| `info.withdrawalHistory(params)`               | `{ wallet, limit? }`                                                               | `WithdrawalHistoryResponse`    |
+| `info.rfqStatus(params)`                       | `{ rfqId }`                                                                        | `RfqStatusResponse`            |
+| `info.historicalTheos(params)`                 | `{ instrumentName, interval, limit? }`                                             | `HistoricalTheosResponse`      |
+| `info.historicalTheosBatch(params)`            | `{ instrumentNames, interval, limit? }`                                            | `HistoricalTheosBatchResponse` |
+| `info.historicalPnl(params)`                   | `{ wallet, interval, limit?, includeAttribution? }`                                | `HistoricalPnlResponse`        |
+| `info.liquidationStatus(params)`               | `{ wallet }`                                                                       | `LiquidationStatusResponse`    |
+| `info.liquidationHistory(params)`              | `{ wallet, limit?, offset? }`                                                      | `LiquidationHistoryResponse`   |
+| `info.liquidations(params)`                    | `{ cursor?, limit?, wallet?, status?, state?, marginMode?, liquidationMode? }`     | `LiquidationsResponse`         |
 
 Hypercall API docs: https://docs.hypercall.xyz/docs/trading/over-api/
 

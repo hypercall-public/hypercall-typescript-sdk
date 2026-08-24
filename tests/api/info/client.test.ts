@@ -115,18 +115,22 @@ describe("InfoClient", () => {
           wallet: WALLET,
           limit: 25,
           offset: 0,
-          competition_id: 12,
           from_ts_ms: 1_700_000_000_000,
           to_ts_ms: 1_700_086_400_000,
           symbol: "SPCX-20261231-10-C",
         }, signal),
       path:
-        `/profile/trades?wallet=${LOWER_WALLET}&limit=25&offset=0&competition_id=12&from_ts_ms=1700000000000&to_ts_ms=1700086400000&symbol=SPCX-20261231-10-C`,
+        `/profile/trades?wallet=${LOWER_WALLET}&limit=25&offset=0&from_ts_ms=1700000000000&to_ts_ms=1700086400000&symbol=SPCX-20261231-10-C`,
     },
     {
       name: "profileRealizedPnl",
-      call: (client, signal) => client.profileRealizedPnl({ wallet: WALLET, competition_id: 12 }, signal),
-      path: `/profile/realized-pnl?wallet=${LOWER_WALLET}&competition_id=12`,
+      call: (client, signal) =>
+        client.profileRealizedPnl({
+          wallet: WALLET,
+          from_ts_ms: 1_700_000_000_000,
+          to_ts_ms: 1_700_086_400_000,
+        }, signal),
+      path: `/profile/realized-pnl?wallet=${LOWER_WALLET}&from_ts_ms=1700000000000&to_ts_ms=1700086400000`,
     },
     {
       name: "orders",
@@ -137,6 +141,11 @@ describe("InfoClient", () => {
       name: "fills",
       call: (client, signal) => client.fills({ wallet: WALLET, limit: 25, offset: 0 }, signal),
       path: `/fills?wallet=${LOWER_WALLET}&limit=25&offset=0`,
+    },
+    {
+      name: "orderStatus",
+      call: (client, signal) => client.orderStatus({ wallet: WALLET, orderId: "client-order-1" }, signal),
+      path: `/orders/status?wallet=${LOWER_WALLET}&order_id=client-order-1`,
     },
     {
       name: "trades",
@@ -157,6 +166,16 @@ describe("InfoClient", () => {
       name: "trades by account",
       call: (client, signal) => client.trades({ account: WALLET, limit: 25, offset: 0 }, signal),
       path: `/trades?limit=25&offset=0&account=${LOWER_WALLET}`,
+    },
+    {
+      name: "trades after cursor",
+      call: (client, signal) => client.trades({ after_trade_id: 36211, limit: 25 }, signal),
+      path: "/trades?limit=25&after_trade_id=36211",
+    },
+    {
+      name: "trade",
+      call: (client, signal) => client.trade({ tradeId: 36211 }, signal),
+      path: "/trades/36211",
     },
     {
       name: "historicalPnl",
@@ -210,6 +229,45 @@ describe("InfoClient", () => {
       name: "authorizedAgents",
       call: (client, signal) => client.authorizedAgents({ wallet: WALLET }, signal),
       path: `/authorized-agents?wallet=${LOWER_WALLET}`,
+    },
+    {
+      name: "riskGrid",
+      call: (client, signal) => client.riskGrid({ wallet: WALLET }, signal),
+      path: `/risk/grid?wallet=${LOWER_WALLET}`,
+    },
+    {
+      name: "referralBinding",
+      call: (client, signal) => client.referralBinding({ wallet: WALLET }, signal),
+      path: `/referrals/binding?wallet=${LOWER_WALLET}`,
+    },
+    {
+      name: "referralCodeByOwner",
+      call: (client, signal) => client.referralCodeByOwner({ wallet: WALLET }, signal),
+      path: `/referrals/code?wallet=${LOWER_WALLET}`,
+    },
+    {
+      name: "referralCode",
+      call: (client, signal) => client.referralCode({ code: "ALPHA/BETA" }, signal),
+      path: "/referrals/code/ALPHA%2FBETA",
+    },
+    {
+      name: "referredWallets",
+      call: (client, signal) => client.referredWallets({ wallet: WALLET, limit: 25, offset: 50 }, signal),
+      path: `/referrals/referred?wallet=${LOWER_WALLET}&limit=25&offset=50`,
+    },
+    {
+      name: "transfers",
+      call: (client, signal) =>
+        client.transfers({
+          wallet: WALLET,
+          transactionTypes: ["deposit", "withdrawal"],
+          assets: ["USDC", "HYPE"],
+          statuses: ["completed", "pending"],
+          limit: 25,
+          cursor: "next/page",
+        }, signal),
+      path:
+        `/v1/transfers?wallet=${LOWER_WALLET}&transaction_type=deposit%2Cwithdrawal&asset=USDC%2CHYPE&status=completed%2Cpending&limit=25&cursor=next%2Fpage`,
     },
     {
       name: "directiveStatus",
@@ -285,7 +343,19 @@ describe("InfoClient", () => {
       ValidationError,
     );
     assert.throws(
-      () => client.profileRealizedPnl({ wallet: WALLET, competition_id: 0 }),
+      () => client.profileRealizedPnl({ wallet: WALLET, from_ts_ms: -1 }),
+      ValidationError,
+    );
+    assert.throws(
+      () => client.orderStatus({ wallet: WALLET, orderId: "" }),
+      ValidationError,
+    );
+    assert.throws(
+      () => client.trade({ tradeId: 0 }),
+      ValidationError,
+    );
+    assert.throws(
+      () => client.transfers({ wallet: WALLET, transactionTypes: ["unknown"] } as never),
       ValidationError,
     );
 
@@ -305,6 +375,14 @@ describe("InfoClient", () => {
     );
     assert.throws(
       () => client.trades({ account: "not-a-wallet" } as never),
+      ValidationError,
+    );
+    assert.throws(
+      () => client.trades({ after_trade_id: 36211, offset: 0 } as never),
+      ValidationError,
+    );
+    assert.throws(
+      () => client.trades({ after_trade_id: 36211, underlying: "SPCX" } as never),
       ValidationError,
     );
 

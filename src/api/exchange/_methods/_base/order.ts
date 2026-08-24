@@ -23,29 +23,29 @@ export type OrderUpdateInfo = {
   size: string;
   side: "Buy" | "Sell" | "buy" | "sell";
   tif: string;
-  client_id: string;
-  order_id: number;
-  is_perp: boolean | null;
+  client_id: string | null;
+  order_id: number | null;
+  is_perp: boolean;
   underlying: string | null;
   reduce_only: boolean | null;
   nonce: number | null;
   signature: string | null;
+  mmp_enabled: boolean;
+  builder_code_address: string | null;
 };
+
+/** Status values returned by order write endpoints. */
+export type OrderUpdateStatus = "ACKED" | "OPEN" | "PARTIALLY_FILLED" | "FILLED" | "CANCELED" | "REJECTED";
 
 /** Order update message returned by write endpoints. */
 export type OrderUpdateMessage = {
   timestamp: number;
   info: OrderUpdateInfo;
-  status: string;
+  status: OrderUpdateStatus;
   reason: string | null;
   filled_size: string;
-  order_id: number;
+  order_id: number | null;
   wallet_address: string;
-  request?: {
-    symbol: string;
-    price: string;
-    size: string;
-    side: "Buy" | "Sell";
-    tif: "GTC" | "IOC" | "FOK";
-  };
+  mmp_triggered: boolean;
+  request_id?: string;
 };

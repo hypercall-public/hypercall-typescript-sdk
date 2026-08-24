@@ -5,12 +5,15 @@ import {
   type BulkCancelOrdersParameters,
   type CancelOrderByClientIdParameters,
   type CancelOrderParameters,
+  type CreateReferralCodeParameters,
   ExchangeClient,
   HttpTransport,
   type PlaceOrderParameters,
   type ReplaceOrderParameters,
   type RevokeAgentParameters,
+  type RevokeAllAgentsParameters,
   type SetMarginModeParameters,
+  type SetReferrerParameters,
   type SetSettlementPayoutsSeenParameters,
   type SubmitRfqParameters,
   type SubmitStandardMarginLiquidationParameters,
@@ -36,6 +39,26 @@ const revokeAgentRequest = {
   signature,
 } satisfies RevokeAgentParameters;
 
+const revokeAllAgentsRequest = {
+  nonce: 3,
+  signature,
+} satisfies RevokeAllAgentsParameters;
+
+const createReferralCodeRequest = {
+  wallet,
+  code: "ALPHA",
+  nonce: 4,
+  signature,
+} satisfies CreateReferralCodeParameters;
+
+const setReferrerRequest = {
+  wallet,
+  code: "BETA",
+  referrer: agent,
+  nonce: 5,
+  signature,
+} satisfies SetReferrerParameters;
+
 const placeOrderRequest = {
   wallet,
   symbol: "BTC-30JUN26-100000-C",
@@ -45,7 +68,8 @@ const placeOrderRequest = {
   tif: "gtc",
   route: "book_only",
   client_id: "client-123",
-  nonce: 3,
+  reduce_only: true,
+  nonce: 6,
   signature,
 } satisfies PlaceOrderParameters;
 
@@ -58,21 +82,22 @@ const replaceOrderRequest = {
   price: "101",
   tif: "ioc",
   client_id: "client-124",
-  nonce: 4,
+  reduce_only: true,
+  nonce: 7,
   signature,
 } satisfies ReplaceOrderParameters;
 
 const cancelOrderRequest = {
   wallet,
   order_id: 123,
-  nonce: 5,
+  nonce: 8,
   signature,
 } satisfies CancelOrderParameters;
 
 const cancelOrderByClientIdRequest = {
   wallet,
   client_id: "client-123",
-  nonce: 6,
+  nonce: 9,
   signature,
 } satisfies CancelOrderByClientIdParameters;
 
@@ -87,14 +112,14 @@ const bulkCancelOrdersByClientIdRequest = {
 const setMarginModeRequest = {
   wallet,
   margin_mode: "portfolio",
-  nonce: 7,
+  nonce: 10,
   signature,
 } satisfies SetMarginModeParameters;
 
 const setSettlementPayoutsSeenRequest = {
   wallet,
   ids: [123],
-  nonce: 8,
+  nonce: 11,
   signature,
 } satisfies SetSettlementPayoutsSeenParameters;
 
@@ -102,7 +127,7 @@ const submitRfqRequest = {
   rfq_id: "00000000-0000-0000-0000-000000000000",
   legs: [{ instrument: "BTC-30JUN26-100000-C", side: "Buy", size: "0.1" }],
   wallet_address: wallet,
-  nonce: 9,
+  nonce: 12,
   signature,
 } satisfies SubmitRfqParameters;
 
@@ -110,7 +135,7 @@ const acceptRfqQuoteRequest = {
   rfq_id: "00000000-0000-0000-0000-000000000000",
   quote_id: "11111111-1111-1111-1111-111111111111",
   wallet_address: wallet,
-  nonce: 10,
+  nonce: 13,
   signature,
 } satisfies AcceptRfqQuoteParameters;
 
@@ -126,7 +151,7 @@ const submitStandardMarginLiquidationRequest = {
   auction_version: 1,
   valuation_timestamp_ms: 1,
   bid_intent_hash: "intent-1",
-  nonce: 11,
+  nonce: 14,
   signature,
 } satisfies SubmitStandardMarginLiquidationParameters;
 
@@ -135,13 +160,16 @@ const withdrawUsdcRequest = {
   account: wallet,
   destination: wallet,
   amount: "100",
-  nonce: 12,
+  nonce: 15,
   signature,
 } satisfies WithdrawUsdcParameters;
 
 async function submitPreSignedWriteExamples() {
   await exchange.approveAgent(approveAgentRequest);
   await exchange.revokeAgent(revokeAgentRequest);
+  await exchange.revokeAllAgents(revokeAllAgentsRequest);
+  await exchange.createReferralCode(createReferralCodeRequest);
+  await exchange.setReferrer(setReferrerRequest);
   await exchange.placeOrder(placeOrderRequest);
   await exchange.replaceOrder(replaceOrderRequest);
   await exchange.cancelOrder(cancelOrderRequest);
@@ -160,6 +188,9 @@ console.log({
   note: "Request shapes only. submitPreSignedWriteExamples is intentionally not invoked.",
   approveAgent: approveAgentRequest,
   revokeAgent: revokeAgentRequest,
+  revokeAllAgents: revokeAllAgentsRequest,
+  createReferralCode: createReferralCodeRequest,
+  setReferrer: setReferrerRequest,
   placeOrder: placeOrderRequest,
   replaceOrder: replaceOrderRequest,
   cancelOrder: cancelOrderRequest,

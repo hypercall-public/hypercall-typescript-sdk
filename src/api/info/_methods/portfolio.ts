@@ -97,6 +97,10 @@ export type Portfolio = {
   total_margin_used: Decimal;
   /** Free collateral available for new trades in USD. */
   available_balance: Decimal;
+  /** HyperCore Account.sol USDC eligible for a direct portfolio-margin withdrawal. */
+  withdrawable_usdc?: Decimal | null;
+  /** Source timestamp of the authoritative portfolio snapshot. */
+  portfolio_snapshot_timestamp_ms: number | null;
   /** SPAN margin breakdown, present when computed. */
   span_margin?: SpanMarginSummary;
   /** Margin mode for this account. */

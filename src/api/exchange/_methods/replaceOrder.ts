@@ -23,6 +23,8 @@ export const ReplaceOrderRequest = v.pipe(
     price: v.pipe(NonEmptyString, v.description("Order price.")),
     /** Replacement order time in force. */
     tif: v.pipe(TimeInForce, v.description("Time in force.")),
+    /** Whether the replacement may only reduce an existing position. */
+    reduce_only: v.pipe(v.optional(v.boolean()), v.description("Reduce-only flag.")),
     /** Optional client order ID for the replacement. Empty string is accepted for legacy signatures. */
     client_id: v.pipe(v.optional(v.string()), v.description("Client order ID.")),
     /** Nonce used in the EIP-712 signature. */
@@ -53,7 +55,8 @@ export type ReplaceOrderOptions = ExchangeRequestOptions;
 /**
  * Replace an order using a pre-signed Hypercall EIP-712 payload.
  *
- * Signing: pre-signed EIP-712 `ReplaceOrder` payload.
+ * Signing: pre-signed EIP-712 `ReplaceOrder` payload. A request with
+ * `reduce_only: true` must use the `ReplaceOrderReduceOnly` EIP-712 type.
  *
  * @param config General configuration for Exchange API requests.
  * @param params Pre-signed parameters specific to the API request.

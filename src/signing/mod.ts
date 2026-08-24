@@ -66,6 +66,21 @@ export const PLACE_ORDER_TYPES = {
   ],
 } as const satisfies Record<string, readonly TypedField[]>;
 
+export const PLACE_ORDER_REDUCE_ONLY_TYPES = {
+  PlaceOrderReduceOnly: [
+    { name: "wallet", type: "address" },
+    { name: "symbol", type: "string" },
+    { name: "side", type: "string" },
+    { name: "size", type: "string" },
+    { name: "price", type: "string" },
+    { name: "tif", type: "string" },
+    { name: "route", type: "string" },
+    { name: "clientId", type: "string" },
+    { name: "reduceOnly", type: "bool" },
+    { name: "nonce", type: "uint64" },
+  ],
+} as const satisfies Record<string, readonly TypedField[]>;
+
 export type PlaceOrderRoute = "best_execution" | "book_only" | "rfq_only";
 
 export const CANCEL_ORDER_TYPES = {
@@ -96,6 +111,10 @@ export const REVOKE_AGENT_TYPES = {
     { name: "agent", type: "address" },
     { name: "nonce", type: "uint64" },
   ],
+} as const satisfies Record<string, readonly TypedField[]>;
+
+export const REVOKE_ALL_AGENTS_TYPES = {
+  RevokeAllAgents: [{ name: "nonce", type: "uint64" }],
 } as const satisfies Record<string, readonly TypedField[]>;
 
 export const SET_MARGIN_MODE_TYPES = {
@@ -154,6 +173,37 @@ export const REPLACE_ORDER_TYPES = {
   ],
 } as const satisfies Record<string, readonly TypedField[]>;
 
+export const REPLACE_ORDER_REDUCE_ONLY_TYPES = {
+  ReplaceOrderReduceOnly: [
+    { name: "wallet", type: "address" },
+    { name: "orderId", type: "string" },
+    { name: "symbol", type: "string" },
+    { name: "side", type: "string" },
+    { name: "size", type: "string" },
+    { name: "price", type: "string" },
+    { name: "tif", type: "string" },
+    { name: "clientId", type: "string" },
+    { name: "reduceOnly", type: "bool" },
+    { name: "nonce", type: "uint64" },
+  ],
+} as const satisfies Record<string, readonly TypedField[]>;
+
+export const CREATE_REFERRAL_CODE_TYPES = {
+  CreateReferralCode: [
+    { name: "wallet", type: "address" },
+    { name: "code", type: "string" },
+    { name: "nonce", type: "uint64" },
+  ],
+} as const satisfies Record<string, readonly TypedField[]>;
+
+export const SET_REFERRER_TYPES = {
+  SetReferrer: [
+    { name: "wallet", type: "address" },
+    { name: "referrer", type: "address" },
+    { name: "nonce", type: "uint64" },
+  ],
+} as const satisfies Record<string, readonly TypedField[]>;
+
 export const SUBMIT_AUTO_EXECUTE_RFQ_TYPES = {
   SubmitAutoExecuteRfq: [
     { name: "rfqId", type: "bytes32" },
@@ -193,6 +243,12 @@ export function buildApproveAgentValue(agent: string, nonce: bigint | number) {
 export function buildRevokeAgentValue(agent: string, nonce: bigint | number) {
   return {
     agent: agent.toLowerCase(),
+    nonce: BigInt(nonce),
+  } as const;
+}
+
+export function buildRevokeAllAgentsValue(nonce: bigint | number) {
+  return {
     nonce: BigInt(nonce),
   } as const;
 }
@@ -288,6 +344,31 @@ export function buildPlaceOrderValue(params: {
   } as const;
 }
 
+export function buildPlaceOrderReduceOnlyValue(params: {
+  wallet: string;
+  symbol: string;
+  side: "Buy" | "Sell";
+  size: string;
+  price: string;
+  tif: "gtc" | "ioc" | "fok";
+  route: PlaceOrderRoute;
+  clientId?: string;
+  nonce: bigint | number;
+}) {
+  return {
+    wallet: params.wallet.toLowerCase(),
+    symbol: params.symbol,
+    side: params.side,
+    size: params.size,
+    price: params.price,
+    tif: params.tif,
+    route: params.route,
+    clientId: params.clientId ?? "",
+    reduceOnly: true,
+    nonce: BigInt(params.nonce),
+  } as const;
+}
+
 export function buildCancelOrderValue(params: {
   wallet: string;
   orderId: string;
@@ -336,6 +417,31 @@ export function buildReplaceOrderValue(params: {
   } as const;
 }
 
+export function buildReplaceOrderReduceOnlyValue(params: {
+  wallet: string;
+  orderId: string;
+  symbol: string;
+  side: "Buy" | "Sell";
+  size: string;
+  price: string;
+  tif: "gtc" | "ioc" | "fok";
+  clientId?: string;
+  nonce: bigint | number;
+}) {
+  return {
+    wallet: params.wallet.toLowerCase(),
+    orderId: params.orderId,
+    symbol: params.symbol,
+    side: params.side,
+    size: params.size,
+    price: params.price,
+    tif: params.tif,
+    clientId: params.clientId ?? "",
+    reduceOnly: true,
+    nonce: BigInt(params.nonce),
+  } as const;
+}
+
 export type ReplaceOrderValue = ReturnType<typeof buildReplaceOrderValue>;
 
 export const toReplaceOrderRequestPayload = (value: ReplaceOrderValue) => ({
@@ -349,6 +455,46 @@ export const toReplaceOrderRequestPayload = (value: ReplaceOrderValue) => ({
   client_id: value.clientId,
   nonce: Number(value.nonce),
 });
+
+export type ReplaceOrderReduceOnlyValue = ReturnType<typeof buildReplaceOrderReduceOnlyValue>;
+
+export const toReplaceOrderReduceOnlyRequestPayload = (value: ReplaceOrderReduceOnlyValue) => ({
+  wallet: value.wallet,
+  order_id: Number(value.orderId),
+  symbol: value.symbol,
+  side: value.side,
+  price: value.price,
+  size: value.size,
+  tif: value.tif,
+  client_id: value.clientId,
+  reduce_only: value.reduceOnly,
+  nonce: Number(value.nonce),
+});
+
+export function buildCreateReferralCodeValue(params: {
+  wallet: string;
+  code: string;
+  nonce: bigint | number;
+}) {
+  return {
+    wallet: params.wallet.toLowerCase(),
+    // The server authenticates this exact string before normalizing the stored code.
+    code: params.code,
+    nonce: BigInt(params.nonce),
+  } as const;
+}
+
+export function buildSetReferrerValue(params: {
+  wallet: string;
+  referrer: string;
+  nonce: bigint | number;
+}) {
+  return {
+    wallet: params.wallet.toLowerCase(),
+    referrer: params.referrer.toLowerCase(),
+    nonce: BigInt(params.nonce),
+  } as const;
+}
 
 export function buildSubmitAutoExecuteRfqValue(params: {
   rfqId: `0x${string}`;
@@ -398,6 +544,8 @@ export function buildAcceptRfqQuoteValue(params: {
 
 export type PlaceOrderValue = ReturnType<typeof buildPlaceOrderValue>;
 
+export type PlaceOrderReduceOnlyValue = ReturnType<typeof buildPlaceOrderReduceOnlyValue>;
+
 export const toOrderRequestPayload = (value: PlaceOrderValue) => ({
   wallet: value.wallet,
   symbol: value.symbol,
@@ -407,6 +555,19 @@ export const toOrderRequestPayload = (value: PlaceOrderValue) => ({
   tif: value.tif,
   route: value.route,
   client_id: value.clientId,
+  nonce: Number(value.nonce),
+});
+
+export const toOrderReduceOnlyRequestPayload = (value: PlaceOrderReduceOnlyValue) => ({
+  wallet: value.wallet,
+  symbol: value.symbol,
+  side: value.side,
+  price: value.price,
+  size: value.size,
+  tif: value.tif,
+  route: value.route,
+  client_id: value.clientId,
+  reduce_only: value.reduceOnly,
   nonce: Number(value.nonce),
 });
 

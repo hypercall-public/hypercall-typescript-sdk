@@ -7,6 +7,9 @@ export type Decimal = string;
 /** Trade or order side returned by REST endpoints. */
 export type Side = "Buy" | "Sell";
 
+/** Instrument family returned by fills and orders. */
+export type InstrumentType = "option" | "perp";
+
 /** Common paginated response metadata. */
 export type Pagination = {
   /** Page size used by the request. */
@@ -36,7 +39,7 @@ export type ApiResponse<TData> = {
   /** Whether the request succeeded. */
   success: boolean;
   /** Response payload, present on success. */
-  data?: TData;
+  data?: TData | null;
   /** Human-readable error message, present on failure. */
   error?: string | null;
 };

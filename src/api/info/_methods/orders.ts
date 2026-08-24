@@ -1,7 +1,7 @@
 import * as v from "@valibot/valibot";
 
-import { NonNegativeInteger, parse, PositiveInteger, WalletAddress } from "../../_base.ts";
-import type { Address, Decimal, PaginatedResponse, Side } from "./_base/_schemas.ts";
+import { NonEmptyString, NonNegativeInteger, parse, PositiveInteger, WalletAddress } from "../../_base.ts";
+import type { Address, Decimal, InstrumentType, PaginatedResponse, Side } from "./_base/_schemas.ts";
 import { type InfoConfig, toQuery } from "./_base/mod.ts";
 
 // -------------------- Schemas --------------------
@@ -12,7 +12,7 @@ export const OrdersRequest = v.pipe(
     /** Wallet address. */
     wallet: v.pipe(WalletAddress, v.description("Wallet address.")),
     /** Maximum rows to return. */
-    limit: v.pipe(v.optional(PositiveInteger), v.description("Limit.")),
+    limit: v.pipe(v.optional(v.pipe(PositiveInteger, v.maxValue(50))), v.description("Limit.")),
     /** Rows to skip. */
     offset: v.pipe(v.optional(NonNegativeInteger), v.description("Offset.")),
     /** Optional order status filter. */
@@ -52,8 +52,8 @@ export type Order = {
   price: Decimal;
   /** Order size in contracts. */
   size: Decimal;
-  /** Time-in-force policy. */
-  tif: TimeInForce;
+  /** Time-in-force policy, when the source exposes it. */
+  tif?: TimeInForce;
   /** Current order status, if known. */
   status: OrderStatus | null;
   /** Order creation timestamp in milliseconds since epoch. */
@@ -64,10 +64,26 @@ export type Order = {
   filled_size?: Decimal | null;
   /** Whether Market Maker Protection is enabled for this order. */
   mmp_enabled: boolean;
+  /** Instrument family that produced this order. */
+  instrument_type: InstrumentType;
 };
 
 /** Orders response. */
 export type OrdersResponse = PaginatedResponse<Order>;
+
+/** Request a HyperCore order status for a wallet. */
+export const OrderStatusRequest = v.object({
+  wallet: v.pipe(WalletAddress, v.description("Wallet address.")),
+  orderId: v.pipe(NonEmptyString, v.description("HyperCore order ID or client order ID.")),
+});
+export type OrderStatusRequest = v.InferOutput<typeof OrderStatusRequest>;
+export type OrderStatusParameters = v.InferInput<typeof OrderStatusRequest>;
+
+/** HyperCore order status response. */
+export type OrderStatusResponse = {
+  success: boolean;
+  data: Order | null;
+};
 
 /**
  * Request orders for a wallet.
@@ -109,4 +125,18 @@ export function orders(
   });
 
   return config.transport.request<OrdersResponse>(`/orders?${query}`, {}, signal);
+}
+
+/** Request a HyperCore order status by numeric order ID or client order ID. */
+export function orderStatus(
+  config: InfoConfig,
+  params: OrderStatusParameters,
+  signal?: AbortSignal,
+): Promise<OrderStatusResponse> {
+  const request = parse(OrderStatusRequest, params);
+  const query = toQuery({
+    wallet: request.wallet.toLowerCase(),
+    order_id: request.orderId,
+  });
+  return config.transport.request<OrderStatusResponse>(`/orders/status?${query}`, {}, signal);
 }
