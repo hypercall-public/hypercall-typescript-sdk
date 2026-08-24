@@ -76,8 +76,8 @@ export type SettlementPayoutsResponse = PaginatedResponse<SettlementPayout> & {
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { settlementPayouts } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { settlementPayouts } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *

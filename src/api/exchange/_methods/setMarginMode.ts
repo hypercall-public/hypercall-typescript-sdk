@@ -66,8 +66,8 @@ export type SetMarginModeOptions = ExchangeRequestOptions;
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { setMarginMode } from "@hypercall/sdk/api/exchange";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { setMarginMode } from "@hypercallxyz/sdk/api/exchange";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *

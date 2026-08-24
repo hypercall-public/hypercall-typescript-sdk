@@ -41,6 +41,12 @@ import {
   type CancelOrderByClientIdResponse,
 } from "./_methods/cancelOrderByClientId.ts";
 import {
+  createReferralCode,
+  type CreateReferralCodeOptions,
+  type CreateReferralCodeParameters,
+  type CreateReferralCodeResponse,
+} from "./_methods/createReferralCode.ts";
+import {
   placeOrder,
   type PlaceOrderOptions,
   type PlaceOrderParameters,
@@ -58,6 +64,18 @@ import {
   type RevokeAgentParameters,
   type RevokeAgentResponse,
 } from "./_methods/revokeAgent.ts";
+import {
+  revokeAllAgents,
+  type RevokeAllAgentsOptions,
+  type RevokeAllAgentsParameters,
+  type RevokeAllAgentsResponse,
+} from "./_methods/revokeAllAgents.ts";
+import {
+  setReferrer,
+  type SetReferrerOptions,
+  type SetReferrerParameters,
+  type SetReferrerResponse,
+} from "./_methods/setReferrer.ts";
 import {
   setMarginMode,
   type SetMarginModeOptions,
@@ -111,7 +129,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -143,7 +161,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -176,7 +194,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -212,7 +230,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -250,7 +268,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -288,7 +306,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -327,7 +345,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -366,7 +384,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -399,7 +417,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -431,7 +449,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -468,7 +486,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -503,7 +521,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -537,7 +555,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -574,7 +592,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -604,10 +622,31 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
   ): Promise<SubmitStandardMarginLiquidationResponse> {
     return submitStandardMarginLiquidation(this.config_, params, opts);
   }
+
+  /** Revoke every authorized agent using a pre-signed payload. */
+  revokeAllAgents(
+    params: RevokeAllAgentsParameters,
+    opts?: RevokeAllAgentsOptions,
+  ): Promise<RevokeAllAgentsResponse> {
+    return revokeAllAgents(this.config_, params, opts);
+  }
+
+  /** Create an account's permanent referral code. */
+  createReferralCode(
+    params: CreateReferralCodeParameters,
+    opts?: CreateReferralCodeOptions,
+  ): Promise<CreateReferralCodeResponse> {
+    return createReferralCode(this.config_, params, opts);
+  }
+
+  /** Permanently set an account's referrer. */
+  setReferrer(params: SetReferrerParameters, opts?: SetReferrerOptions): Promise<SetReferrerResponse> {
+    return setReferrer(this.config_, params, opts);
+  }
 }
 
 export type { ExchangeConfig, ExchangeRequestOptions } from "./_methods/_base/mod.ts";
-export type { OrderUpdateInfo, OrderUpdateMessage } from "./_methods/_base/order.ts";
+export type { OrderUpdateInfo, OrderUpdateMessage, OrderUpdateStatus } from "./_methods/_base/order.ts";
 export type {
   AcceptRfqQuoteOptions,
   AcceptRfqQuoteParameters,
@@ -646,6 +685,12 @@ export type {
   CancelOrderByClientIdResponse,
 } from "./_methods/cancelOrderByClientId.ts";
 export type {
+  CreateReferralCodeOptions,
+  CreateReferralCodeParameters,
+  CreateReferralCodeRequest,
+  CreateReferralCodeResponse,
+} from "./_methods/createReferralCode.ts";
+export type {
   PlaceOrderOptions,
   PlaceOrderParameters,
   PlaceOrderRequest,
@@ -671,6 +716,18 @@ export type {
   RevokeAgentRequest,
   RevokeAgentResponse,
 } from "./_methods/revokeAgent.ts";
+export type {
+  RevokeAllAgentsOptions,
+  RevokeAllAgentsParameters,
+  RevokeAllAgentsRequest,
+  RevokeAllAgentsResponse,
+} from "./_methods/revokeAllAgents.ts";
+export type {
+  SetReferrerOptions,
+  SetReferrerParameters,
+  SetReferrerRequest,
+  SetReferrerResponse,
+} from "./_methods/setReferrer.ts";
 export type {
   SetSettlementPayoutsSeenOptions,
   SetSettlementPayoutsSeenParameters,

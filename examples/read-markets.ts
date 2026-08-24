@@ -5,7 +5,7 @@ import {
   type MarketSlim,
   type OptionSummary,
   type OrderBook,
-} from "@hypercall/sdk";
+} from "@hypercallxyz/sdk";
 
 const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
 const info = new InfoClient({ transport });

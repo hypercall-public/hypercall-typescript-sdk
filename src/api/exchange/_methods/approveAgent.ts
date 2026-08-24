@@ -48,8 +48,8 @@ export type ApproveAgentOptions = ExchangeRequestOptions;
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { approveAgent } from "@hypercall/sdk/api/exchange";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { approveAgent } from "@hypercallxyz/sdk/api/exchange";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *

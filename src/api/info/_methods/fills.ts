@@ -1,7 +1,7 @@
 import * as v from "@valibot/valibot";
 
 import { NonNegativeInteger, parse, PositiveInteger, WalletAddress } from "../../_base.ts";
-import type { Address, Decimal, PaginatedResponse, Side } from "./_base/_schemas.ts";
+import type { Address, Decimal, InstrumentType, PaginatedResponse, Side } from "./_base/_schemas.ts";
 import { type InfoConfig, toQuery } from "./_base/mod.ts";
 
 // -------------------- Schemas --------------------
@@ -55,6 +55,8 @@ export type Fill = {
   realized_pnl: Decimal | null;
   /** Link to the on-chain transaction, if settled. */
   explorer_url: string | null;
+  /** Instrument family that produced this fill. */
+  instrument_type: InstrumentType;
 };
 
 /** Fills response. */
@@ -73,8 +75,8 @@ export type FillsResponse = PaginatedResponse<Fill>;
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { fills } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { fills } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *

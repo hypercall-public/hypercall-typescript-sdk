@@ -68,16 +68,17 @@ if (import.meta.main) {
         "derivatives",
         "hypercall",
       ],
-      homepage: "https://github.com/abtestingalpha/hypercall-typescript-sdk",
-      bugs: { url: "https://github.com/abtestingalpha/hypercall-typescript-sdk/issues" },
+      homepage: "https://github.com/hypercall-public/hypercall-typescript-sdk",
+      bugs: { url: "https://github.com/hypercall-public/hypercall-typescript-sdk/issues" },
       repository: {
         type: "git",
-        url: "git+https://github.com/abtestingalpha/hypercall-typescript-sdk.git",
+        url: "git+https://github.com/hypercall-public/hypercall-typescript-sdk.git",
       },
       license: "MIT",
       sideEffects: false,
       engines: { node: ">=22.12.0" },
+      publishConfig: { access: "public" },
     },
-    copyFiles: await existingFiles(["README.md", "LICENSE", "CONTRIBUTING.md", "SECURITY.md"]),
+    copyFiles: await existingFiles(["README.md", "LICENSE", "CHANGELOG.md", "CONTRIBUTING.md", "SECURITY.md"]),
   });
 }

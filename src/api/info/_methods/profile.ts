@@ -29,8 +29,6 @@ export const ProfileTradesRequest = v.pipe(
     limit: v.pipe(v.optional(PositiveInteger), v.description("Limit.")),
     /** Rows to skip. */
     offset: v.pipe(v.optional(NonNegativeInteger), v.description("Offset.")),
-    /** Optional competition filter. */
-    competition_id: v.pipe(v.optional(PositiveInteger), v.description("Competition ID.")),
     /** Optional lower timestamp bound in milliseconds. */
     from_ts_ms: v.pipe(v.optional(NonNegativeInteger), v.description("From timestamp in milliseconds.")),
     /** Optional upper timestamp bound in milliseconds. */
@@ -50,8 +48,10 @@ export const ProfileRealizedPnlRequest = v.pipe(
   v.object({
     /** Wallet address. */
     wallet: v.pipe(WalletAddress, v.description("Wallet address.")),
-    /** Optional competition filter. */
-    competition_id: v.pipe(v.optional(PositiveInteger), v.description("Competition ID.")),
+    /** Optional lower timestamp bound in milliseconds. */
+    from_ts_ms: v.pipe(v.optional(NonNegativeInteger), v.description("From timestamp in milliseconds.")),
+    /** Optional upper timestamp bound in milliseconds. */
+    to_ts_ms: v.pipe(v.optional(NonNegativeInteger), v.description("To timestamp in milliseconds.")),
   }),
   v.description("Request realized PnL by symbol for a wallet."),
 );
@@ -59,9 +59,6 @@ export type ProfileRealizedPnlRequest = v.InferOutput<typeof ProfileRealizedPnlR
 
 /** Request parameters for the {@linkcode profileRealizedPnl} function. */
 export type ProfileRealizedPnlParameters = v.InferInput<typeof ProfileRealizedPnlRequest>;
-
-/** Medal code used by profile and competition summaries. */
-export type MedalCode = 1 | 2 | 3 | null;
 
 /** Margin statistics shown on a user's profile. */
 export type ProfileMarginStats = {
@@ -87,44 +84,14 @@ export type ProfilePnlStats = {
   lifetime_realized: Decimal;
 };
 
-/** Summary of a user's rank in a specific competition, shown on their profile. */
-export type ProfileCompetitionRankSummary = {
-  /** Competition identifier. */
-  competition_id: number;
-  /** Competition display name. */
-  competition_name: string;
-  /** Competition lifecycle state. */
-  competition_state: "pre" | "active" | "post";
-  /** User's rank in this competition. */
-  rank: number;
-  /** User's realized PnL in this competition in USD. */
-  pnl: Decimal;
-  /** User's traded volume in this competition in USD. */
-  volume: Decimal;
-  /** User's capital efficiency in this competition. */
-  efficiency: Decimal;
-  /** Medal tier, if awarded. */
-  medal: MedalCode;
-};
-
-/** Platform-wide medals earned by a user across all competitions. */
-export type ProfileMetricMedals = {
-  /** Best PnL medal tier. */
-  pnl: MedalCode;
-  /** Best volume medal tier. */
-  volume: MedalCode;
-  /** Best efficiency medal tier. */
-  efficiency: MedalCode;
-};
-
 /** Aggregated profile data for a single user. */
 export type ProfileData = {
-  /** User's wallet address. */
+  /** Requested identity wallet address. */
   wallet: Address;
+  /** Resolved trading account whose financial statistics are returned. */
+  account_wallet: Address;
   /** Display username. */
   username: string;
-  /** Moderated profile image URL, if set. */
-  profile_image_url?: string | null;
   /** Timestamp when the account was first observed, in milliseconds since epoch. */
   account_first_seen_ts_ms: number | null;
   /** Number of days since the account was first seen. */
@@ -133,12 +100,6 @@ export type ProfileData = {
   margin: ProfileMarginStats;
   /** PnL statistics. */
   pnl: ProfilePnlStats;
-  /** Best overall medal tier across all competitions. */
-  medal: MedalCode;
-  /** Per-metric best medals across all competitions. */
-  platform_medals: ProfileMetricMedals;
-  /** Rank in the currently active competition, if participating. */
-  active_competition_rank?: ProfileCompetitionRankSummary | null;
 };
 
 /** Profile response. */
@@ -186,8 +147,8 @@ export type RealizedPnlResponse = {
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { profile } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { profile } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *
@@ -222,8 +183,8 @@ export function profile(
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { profileTrades } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { profileTrades } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *
@@ -246,7 +207,6 @@ export function profileTrades(
     wallet: request.wallet.toLowerCase(),
     limit: request.limit,
     offset: request.offset,
-    competition_id: request.competition_id,
     from_ts_ms: request.from_ts_ms,
     to_ts_ms: request.to_ts_ms,
     symbol: request.symbol,
@@ -268,8 +228,8 @@ export function profileTrades(
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { profileRealizedPnl } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { profileRealizedPnl } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *
@@ -288,7 +248,8 @@ export function profileRealizedPnl(
   const request = parse(ProfileRealizedPnlRequest, params);
   const query = toQuery({
     wallet: request.wallet.toLowerCase(),
-    competition_id: request.competition_id,
+    from_ts_ms: request.from_ts_ms,
+    to_ts_ms: request.to_ts_ms,
   });
 
   return config.transport.request<RealizedPnlResponse>(`/profile/realized-pnl?${query}`, {}, signal);

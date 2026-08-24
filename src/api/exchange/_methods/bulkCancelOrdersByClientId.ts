@@ -51,8 +51,8 @@ export type BulkCancelOrdersByClientIdOptions = ExchangeRequestOptions;
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { bulkCancelOrdersByClientId } from "@hypercall/sdk/api/exchange";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { bulkCancelOrdersByClientId } from "@hypercallxyz/sdk/api/exchange";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *

@@ -1,4 +1,4 @@
-import { HttpTransport, InfoClient, type RfqQuote } from "@hypercall/sdk";
+import { HttpTransport, InfoClient, type RfqQuote } from "@hypercallxyz/sdk";
 
 const rfqId: string | undefined = undefined;
 const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });

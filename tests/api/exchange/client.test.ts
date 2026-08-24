@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 
-import { ExchangeClient, ValidationError } from "../../../src/mod.ts";
+import {
+  ExchangeClient,
+  type PlaceOrderResponse,
+  type ReplaceOrderResponse,
+  ValidationError,
+} from "../../../src/mod.ts";
 import {
   acceptRfqQuote,
   approveAgent,
@@ -8,10 +13,13 @@ import {
   bulkCancelOrdersByClientId,
   cancelOrder,
   cancelOrderByClientId,
+  createReferralCode,
   placeOrder,
   replaceOrder,
   revokeAgent,
+  revokeAllAgents,
   setMarginMode,
+  setReferrer,
   setSettlementPayoutsSeen,
   submitRfq,
   submitStandardMarginLiquidation,
@@ -159,6 +167,64 @@ describe("ExchangeClient", () => {
       agent: SIGNER,
       signature: "0xsignature",
       nonce: 123,
+    });
+  });
+
+  test("revokeAllAgents sends the expected pre-signed request", async () => {
+    const response = { success: true, error: null };
+    const { client, transport } = createClient(response);
+    const controller = new AbortController();
+
+    const result = await client.revokeAllAgents(
+      { nonce: 124, signature: "0xsignature" },
+      { signal: controller.signal },
+    );
+
+    assert.equal(result, response);
+    assert.deepEqual(transport.calls, [{
+      path: "/revoke-all-agents",
+      init: {
+        method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ nonce: 124, signature: "0xsignature" }),
+      },
+      signal: controller.signal,
+    }]);
+  });
+
+  test("referral writes send the expected pre-signed requests", async () => {
+    const { client, transport } = createClient();
+
+    await client.createReferralCode({
+      wallet: WALLET,
+      code: "ALPHA",
+      nonce: 125,
+      signature: "0xsignature",
+    });
+    await client.setReferrer({
+      wallet: WALLET,
+      code: "ALPHA",
+      referrer: SIGNER,
+      nonce: 126,
+      signature: "0xsignature",
+    });
+
+    assert.equal(transport.calls[0].path, "/referrals/code");
+    assert.equal(transport.calls[0].init.method, "POST");
+    assert.deepEqual(parseBody(transport.calls[0]), {
+      wallet: LOWER_WALLET,
+      code: "ALPHA",
+      nonce: 125,
+      signature: "0xsignature",
+    });
+    assert.equal(transport.calls[1].path, "/referrals/set-referrer");
+    assert.equal(transport.calls[1].init.method, "POST");
+    assert.deepEqual(parseBody(transport.calls[1]), {
+      wallet: LOWER_WALLET,
+      code: "ALPHA",
+      referrer: SIGNER,
+      nonce: 126,
+      signature: "0xsignature",
     });
   });
 
@@ -430,13 +496,16 @@ describe("ExchangeClient", () => {
         reduce_only: null,
         nonce: 456,
         signature: null,
+        mmp_enabled: true,
+        builder_code_address: SIGNER,
       },
-      status: "OPEN_ORDER",
+      status: "OPEN",
       reason: null,
       filled_size: "0",
       order_id: 123,
       wallet_address: LOWER_WALLET,
-    };
+      mmp_triggered: false,
+    } satisfies PlaceOrderResponse;
     const { client, transport } = createClient(response);
     const controller = new AbortController();
 
@@ -452,6 +521,7 @@ describe("ExchangeClient", () => {
         client_id: "client-123",
         nonce: 456,
         signature: "0xsignature",
+        reduce_only: true,
         mmp_enabled: true,
         builder_code_address: SIGNER,
       },
@@ -481,6 +551,7 @@ describe("ExchangeClient", () => {
       wallet: LOWER_WALLET,
       signature: "0xsignature",
       nonce: 456,
+      reduce_only: true,
     });
   });
 
@@ -500,13 +571,16 @@ describe("ExchangeClient", () => {
         reduce_only: null,
         nonce: 457,
         signature: null,
+        mmp_enabled: false,
+        builder_code_address: null,
       },
-      status: "OPEN_ORDER",
+      status: "OPEN",
       reason: null,
       filled_size: "0",
       order_id: 124,
       wallet_address: LOWER_WALLET,
-    };
+      mmp_triggered: false,
+    } satisfies ReplaceOrderResponse;
     const { client, transport } = createClient(response);
 
     const result = await client.replaceOrder({
@@ -520,6 +594,7 @@ describe("ExchangeClient", () => {
       client_id: "",
       nonce: 457,
       signature: "0xsignature",
+      reduce_only: true,
       builder_code_address: null,
     });
 
@@ -544,6 +619,7 @@ describe("ExchangeClient", () => {
       wallet: LOWER_WALLET,
       signature: "0xsignature",
       nonce: 457,
+      reduce_only: true,
     });
   });
 
@@ -578,6 +654,31 @@ describe("ExchangeClient", () => {
     assert.equal(transport.calls[0].init.method, "POST");
     assert.equal(transport.calls[1].path, "/order");
     assert.equal(transport.calls[1].init.method, "PUT");
+  });
+
+  test("low-level identity write exports send the same requests", async () => {
+    const transport = new MockTransport();
+
+    await revokeAllAgents({ transport }, { nonce: 456, signature: "0xsignature" });
+    await createReferralCode({ transport }, {
+      wallet: WALLET,
+      code: "ALPHA",
+      nonce: 457,
+      signature: "0xsignature",
+    });
+    await setReferrer({ transport }, {
+      wallet: WALLET,
+      code: "ALPHA",
+      referrer: SIGNER,
+      nonce: 458,
+      signature: "0xsignature",
+    });
+
+    assert.deepEqual(transport.calls.map((call) => [call.path, call.init.method]), [
+      ["/revoke-all-agents", "DELETE"],
+      ["/referrals/code", "POST"],
+      ["/referrals/set-referrer", "POST"],
+    ]);
   });
 
   test("setMarginMode sends the expected pre-signed request", async () => {

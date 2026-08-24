@@ -9,6 +9,7 @@ import { type InfoConfig, toQuery } from "./_base/mod.ts";
 type TradesRequestInput = {
   limit?: number;
   offset?: number;
+  after_trade_id?: number;
   symbol?: string;
   underlying?: string;
   account?: string;
@@ -21,6 +22,8 @@ export const TradesRequest = v.pipe(
     limit: v.pipe(v.optional(PositiveInteger), v.description("Limit.")),
     /** Rows to skip. Not supported when filtering by symbol. */
     offset: v.pipe(v.optional(NonNegativeInteger), v.description("Offset.")),
+    /** Exclusive global trade cursor. */
+    after_trade_id: v.pipe(v.optional(NonNegativeInteger), v.description("Exclusive trade cursor.")),
     /** Optional instrument symbol filter. */
     symbol: v.pipe(v.optional(NonEmptyString), v.description("Instrument symbol filter.")),
     /** Optional underlying asset filter. */
@@ -38,6 +41,15 @@ export const TradesRequest = v.pipe(
     (input: TradesRequestInput) => input.symbol === undefined || input.offset === undefined,
     "Symbol-filtered trades do not support offset.",
   ),
+  v.check(
+    (input: TradesRequestInput) =>
+      input.after_trade_id === undefined ||
+      (input.offset === undefined &&
+        input.symbol === undefined &&
+        input.underlying === undefined &&
+        input.account === undefined),
+    "Cursor pagination cannot be combined with offset or trade filters.",
+  ),
   v.description("Request public venue trades."),
 );
 export type TradesRequest = v.InferOutput<typeof TradesRequest>;
@@ -54,6 +66,17 @@ export type AllTradesParameters = TradesBaseParameters & {
   symbol?: never;
   underlying?: never;
   account?: never;
+  after_trade_id?: never;
+};
+
+/** Request parameters for public venue trades after an exclusive global cursor. */
+export type CursorTradesParameters = TradesBaseParameters & {
+  /** Exclusive global trade cursor. */
+  after_trade_id: number;
+  offset?: never;
+  symbol?: never;
+  underlying?: never;
+  account?: never;
 };
 
 /** Request parameters for public venue trades filtered by symbol. */
@@ -63,6 +86,7 @@ export type SymbolTradesParameters = TradesBaseParameters & {
   offset?: never;
   underlying?: never;
   account?: never;
+  after_trade_id?: never;
 };
 
 /** Request parameters for public venue trades filtered by underlying asset. */
@@ -73,6 +97,7 @@ export type UnderlyingTradesParameters = TradesBaseParameters & {
   offset?: number;
   symbol?: never;
   account?: never;
+  after_trade_id?: never;
 };
 
 /** Request parameters for public venue trades filtered by maker or taker wallet. */
@@ -83,12 +108,14 @@ export type AccountTradesParameters = TradesBaseParameters & {
   offset?: number;
   symbol?: never;
   underlying?: never;
+  after_trade_id?: never;
 };
 
 /** Request parameters for the {@linkcode trades} function. */
 export type TradesParameters =
   | AccountTradesParameters
   | AllTradesParameters
+  | CursorTradesParameters
   | SymbolTradesParameters
   | UnderlyingTradesParameters;
 
@@ -110,6 +137,8 @@ export type Trade = {
   maker_fee: Decimal;
   /** Fee charged to the taker in USD. */
   taker_fee: Decimal;
+  /** Direction of the taker's fill. */
+  taker_side: "Buy" | "Sell";
   /** Trade timestamp in milliseconds since epoch. */
   timestamp: number;
   /** Timestamp when the trade was persisted. */
@@ -118,6 +147,20 @@ export type Trade = {
 
 /** Public venue trades response. */
 export type TradesResponse = PaginatedResponse<Trade>;
+
+/** Request one trade by its unique ID. */
+export const TradeRequest = v.object({
+  tradeId: v.pipe(PositiveInteger, v.description("Trade ID.")),
+});
+export type TradeRequest = v.InferOutput<typeof TradeRequest>;
+export type TradeParameters = v.InferInput<typeof TradeRequest>;
+
+/** One trade lookup response. */
+export type TradeResponse = {
+  success: boolean;
+  data: Trade;
+  error?: string | null;
+};
 
 /**
  * Request public venue trades.
@@ -132,8 +175,8 @@ export type TradesResponse = PaginatedResponse<Trade>;
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { trades } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { trades } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *
@@ -155,10 +198,21 @@ export function trades(
   const query = toQuery({
     limit: request.limit,
     offset: request.offset,
+    after_trade_id: request.after_trade_id,
     symbol: request.symbol,
     underlying: request.underlying,
     account: request.account?.toLowerCase(),
   });
 
   return config.transport.request<TradesResponse>(query ? `/trades?${query}` : "/trades", {}, signal);
+}
+
+/** Request one trade by its unique trade ID. */
+export function trade(
+  config: InfoConfig,
+  params: TradeParameters,
+  signal?: AbortSignal,
+): Promise<TradeResponse> {
+  const request = parse(TradeRequest, params);
+  return config.transport.request<TradeResponse>(`/trades/${request.tradeId}`, {}, signal);
 }

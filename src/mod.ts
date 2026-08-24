@@ -6,13 +6,13 @@
  * - Clients: {@link InfoClient}, {@link ExchangeClient}
  *
  * For tree-shakeable, low-level access you can import request methods directly from:
- * - `@hypercall/sdk/api/info`
- * - `@hypercall/sdk/api/exchange`
- * - `@hypercall/sdk/signing`
+ * - `@hypercallxyz/sdk/api/info`
+ * - `@hypercallxyz/sdk/api/exchange`
+ * - `@hypercallxyz/sdk/signing`
  *
  * @example Quick start
  * ```ts
- * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+ * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
  *
  * const transport = new HttpTransport();
  * const info = new InfoClient({ transport });

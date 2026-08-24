@@ -51,7 +51,7 @@ export class HttpRequestError extends TransportError {
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  * ```

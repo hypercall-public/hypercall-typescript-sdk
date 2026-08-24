@@ -11,10 +11,15 @@ import {
   buildApproveAgentValue,
   buildCancelOrderByClientIdValue,
   buildCancelOrderValue,
+  buildCreateReferralCodeValue,
+  buildPlaceOrderReduceOnlyValue,
   buildPlaceOrderValue,
+  buildReplaceOrderReduceOnlyValue,
   buildReplaceOrderValue,
   buildRevokeAgentValue,
+  buildRevokeAllAgentsValue,
   buildSetMarginModeValue,
+  buildSetReferrerValue,
   buildSetSettlementPayoutSeenValue,
   buildSignedBody,
   buildStandardMarginLiquidationOrderValue,
@@ -24,13 +29,18 @@ import {
   buildWithdrawUsdcValue,
   CANCEL_ORDER_BY_CLOID_TYPES,
   CANCEL_ORDER_TYPES,
+  CREATE_REFERRAL_CODE_TYPES,
   createHypercallDomain,
   HYPERCALL_DOMAIN_FIELDS,
   HYPERCALL_VERIFYING_CONTRACT,
+  PLACE_ORDER_REDUCE_ONLY_TYPES,
   PLACE_ORDER_TYPES,
+  REPLACE_ORDER_REDUCE_ONLY_TYPES,
   REPLACE_ORDER_TYPES,
   REVOKE_AGENT_TYPES,
+  REVOKE_ALL_AGENTS_TYPES,
   SET_MARGIN_MODE_TYPES,
+  SET_REFERRER_TYPES,
   SET_SETTLEMENT_PAYOUT_SEEN_TYPES,
   STANDARD_MARGIN_LIQUIDATION_ORDER_TYPES,
   SUBMIT_AUTO_EXECUTE_RFQ_TYPES,
@@ -137,6 +147,9 @@ describe("signing helpers", () => {
       { name: "agent", type: "address" },
       { name: "nonce", type: "uint64" },
     ]);
+    assert.deepEqual(REVOKE_ALL_AGENTS_TYPES.RevokeAllAgents, [
+      { name: "nonce", type: "uint64" },
+    ]);
     assert.deepEqual(PLACE_ORDER_TYPES.PlaceOrder, [
       { name: "wallet", type: "address" },
       { name: "symbol", type: "string" },
@@ -157,6 +170,26 @@ describe("signing helpers", () => {
       { name: "price", type: "string" },
       { name: "tif", type: "string" },
       { name: "clientId", type: "string" },
+      { name: "nonce", type: "uint64" },
+    ]);
+    assert.deepEqual(PLACE_ORDER_REDUCE_ONLY_TYPES.PlaceOrderReduceOnly, [
+      ...PLACE_ORDER_TYPES.PlaceOrder.slice(0, -1),
+      { name: "reduceOnly", type: "bool" },
+      { name: "nonce", type: "uint64" },
+    ]);
+    assert.deepEqual(REPLACE_ORDER_REDUCE_ONLY_TYPES.ReplaceOrderReduceOnly, [
+      ...REPLACE_ORDER_TYPES.ReplaceOrder.slice(0, -1),
+      { name: "reduceOnly", type: "bool" },
+      { name: "nonce", type: "uint64" },
+    ]);
+    assert.deepEqual(CREATE_REFERRAL_CODE_TYPES.CreateReferralCode, [
+      { name: "wallet", type: "address" },
+      { name: "code", type: "string" },
+      { name: "nonce", type: "uint64" },
+    ]);
+    assert.deepEqual(SET_REFERRER_TYPES.SetReferrer, [
+      { name: "wallet", type: "address" },
+      { name: "referrer", type: "address" },
       { name: "nonce", type: "uint64" },
     ]);
     assert.deepEqual(CANCEL_ORDER_TYPES.CancelOrder, [
@@ -230,6 +263,9 @@ describe("signing helpers", () => {
       agent: LOWER_AGENT,
       nonce: 6n,
     });
+    assert.deepEqual(buildRevokeAllAgentsValue(7), {
+      nonce: 7n,
+    });
     assert.deepEqual(
       buildPlaceOrderValue({
         wallet: WALLET,
@@ -278,6 +314,65 @@ describe("signing helpers", () => {
         clientId: "client-1",
         nonce: 8n,
       },
+    );
+
+    assert.deepEqual(
+      buildPlaceOrderReduceOnlyValue({
+        wallet: WALLET,
+        symbol: "BTC-260626-100000-C",
+        side: "Sell",
+        size: "0.25",
+        price: "4.5",
+        tif: "fok",
+        route: "best_execution",
+        nonce: 9,
+      }),
+      {
+        wallet: LOWER_WALLET,
+        symbol: "BTC-260626-100000-C",
+        side: "Sell",
+        size: "0.25",
+        price: "4.5",
+        tif: "fok",
+        route: "best_execution",
+        clientId: "",
+        reduceOnly: true,
+        nonce: 9n,
+      },
+    );
+
+    assert.deepEqual(
+      buildReplaceOrderReduceOnlyValue({
+        wallet: WALLET,
+        orderId: "123",
+        symbol: "BTC-260626-100000-C",
+        side: "Buy",
+        size: "0.25",
+        price: "4.5",
+        tif: "gtc",
+        nonce: 10,
+      }),
+      {
+        wallet: LOWER_WALLET,
+        orderId: "123",
+        symbol: "BTC-260626-100000-C",
+        side: "Buy",
+        size: "0.25",
+        price: "4.5",
+        tif: "gtc",
+        clientId: "",
+        reduceOnly: true,
+        nonce: 10n,
+      },
+    );
+
+    assert.deepEqual(
+      buildCreateReferralCodeValue({ wallet: WALLET, code: " MiXeD ", nonce: 11 }),
+      { wallet: LOWER_WALLET, code: " MiXeD ", nonce: 11n },
+    );
+    assert.deepEqual(
+      buildSetReferrerValue({ wallet: WALLET, referrer: AGENT, nonce: 12 }),
+      { wallet: LOWER_WALLET, referrer: LOWER_AGENT, nonce: 12n },
     );
 
     assert.deepEqual(
@@ -499,6 +594,67 @@ describe("signing helpers", () => {
         message: autoRfqMessage,
       },
     );
+  });
+
+  test("new production action types sign and recover with viem", async () => {
+    const typedDataValues: TestTypedData[] = [
+      buildTypedData({
+        chainId: VECTOR_CHAIN_ID,
+        primaryType: "RevokeAllAgents",
+        types: REVOKE_ALL_AGENTS_TYPES,
+        message: buildRevokeAllAgentsValue(201),
+      }),
+      buildTypedData({
+        chainId: VECTOR_CHAIN_ID,
+        primaryType: "PlaceOrderReduceOnly",
+        types: PLACE_ORDER_REDUCE_ONLY_TYPES,
+        message: buildPlaceOrderReduceOnlyValue({
+          wallet: VECTOR_WALLET,
+          symbol: "BTC-30JUN26-100000-C",
+          side: "Sell",
+          size: "0.1",
+          price: "100",
+          tif: "gtc",
+          route: "book_only",
+          nonce: 202,
+        }),
+      }),
+      buildTypedData({
+        chainId: VECTOR_CHAIN_ID,
+        primaryType: "ReplaceOrderReduceOnly",
+        types: REPLACE_ORDER_REDUCE_ONLY_TYPES,
+        message: buildReplaceOrderReduceOnlyValue({
+          wallet: VECTOR_WALLET,
+          orderId: "123",
+          symbol: "BTC-30JUN26-100000-C",
+          side: "Sell",
+          size: "0.1",
+          price: "99",
+          tif: "ioc",
+          nonce: 203,
+        }),
+      }),
+      buildTypedData({
+        chainId: VECTOR_CHAIN_ID,
+        primaryType: "CreateReferralCode",
+        types: CREATE_REFERRAL_CODE_TYPES,
+        message: buildCreateReferralCodeValue({ wallet: VECTOR_WALLET, code: "ALPHA", nonce: 204 }),
+      }),
+      buildTypedData({
+        chainId: VECTOR_CHAIN_ID,
+        primaryType: "SetReferrer",
+        types: SET_REFERRER_TYPES,
+        message: buildSetReferrerValue({ wallet: VECTOR_WALLET, referrer: AGENT, nonce: 205 }),
+      }),
+    ];
+
+    for (const typedDataValue of typedDataValues) {
+      const typedData = toViemTypedData(typedDataValue);
+      const signature = await VECTOR_ACCOUNT.signTypedData(typedData);
+      const recovered = await recoverTypedDataAddress({ ...typedData, signature });
+
+      assert.equal(recovered.toLowerCase(), LOWER_VECTOR_WALLET, typedDataValue.primaryType);
+    }
   });
 
   test("golden signatures match current EIP-712 payloads", async () => {

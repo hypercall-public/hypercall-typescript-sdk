@@ -1,6 +1,6 @@
 {
-  "name": "@hypercall/sdk",
-  "version": "0.0.0",
+  "name": "@hypercallxyz/sdk",
+  "version": "0.1.0",
   "license": "MIT",
   "exports": {
     ".": "./src/mod.ts",
@@ -9,10 +9,10 @@
     "./signing": "./src/signing/mod.ts"
   },
   "imports": {
-    "@hypercall/sdk": "./src/mod.ts",
-    "@hypercall/sdk/api/exchange": "./src/api/exchange/mod.ts",
-    "@hypercall/sdk/api/info": "./src/api/info/mod.ts",
-    "@hypercall/sdk/signing": "./src/signing/mod.ts",
+    "@hypercallxyz/sdk": "./src/mod.ts",
+    "@hypercallxyz/sdk/api/exchange": "./src/api/exchange/mod.ts",
+    "@hypercallxyz/sdk/api/info": "./src/api/info/mod.ts",
+    "@hypercallxyz/sdk/signing": "./src/signing/mod.ts",
     "@valibot/valibot": "jsr:@valibot/valibot@^1.4.1"
   },
   "tasks": {

@@ -23,6 +23,8 @@ export const PlaceOrderRequest = v.pipe(
     tif: v.pipe(TimeInForce, v.description("Time in force.")),
     /** Order route preference included in the signed payload. */
     route: v.pipe(OrderRoute, v.description("Route preference.")),
+    /** Whether the order may only reduce an existing position. */
+    reduce_only: v.pipe(v.optional(v.boolean()), v.description("Reduce-only flag.")),
     /** Optional client order ID. */
     client_id: v.pipe(v.optional(v.string()), v.description("Client order ID.")),
     /** Nonce used in the EIP-712 signature. */
@@ -55,6 +57,7 @@ export type PlaceOrderOptions = ExchangeRequestOptions;
  *
  * Signing: pre-signed EIP-712 `PlaceOrder` payload.
  * The request body `route` must match the route included in the signed payload.
+ * A request with `reduce_only: true` must use the `PlaceOrderReduceOnly` EIP-712 type.
  *
  * @param config General configuration for Exchange API requests.
  * @param params Pre-signed parameters specific to the API request.
@@ -66,8 +69,8 @@ export type PlaceOrderOptions = ExchangeRequestOptions;
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { placeOrder } from "@hypercall/sdk/api/exchange";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { placeOrder } from "@hypercallxyz/sdk/api/exchange";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *

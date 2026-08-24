@@ -54,7 +54,14 @@ import {
   type OptionSummariesResponse,
 } from "./_methods/optionSummaries.ts";
 import { orderbook, type OrderbookParameters, type OrderbookResponse } from "./_methods/orderbook.ts";
-import { orders, type OrdersParameters, type OrdersResponse } from "./_methods/orders.ts";
+import {
+  orders,
+  type OrdersParameters,
+  type OrdersResponse,
+  orderStatus,
+  type OrderStatusParameters,
+  type OrderStatusResponse,
+} from "./_methods/orders.ts";
 import { portfolio, type PortfolioParameters, type PortfolioResponse } from "./_methods/portfolio.ts";
 import {
   profile,
@@ -67,13 +74,35 @@ import {
   type ProfileTradesResponse,
   type RealizedPnlResponse,
 } from "./_methods/profile.ts";
+import {
+  type ReferralBinding,
+  referralBinding,
+  type ReferralBindingParameters,
+  type ReferralCode,
+  referralCode,
+  referralCodeByOwner,
+  type ReferralCodeByOwnerParameters,
+  type ReferralCodeParameters,
+  referredWallets,
+  type ReferredWalletsParameters,
+  type ReferredWalletsResponse,
+} from "./_methods/referrals.ts";
 import { rfqStatus, type RfqStatusParameters, type RfqStatusResponse } from "./_methods/rfq.ts";
+import { riskGrid, type RiskGridParameters, type RiskGridResponse } from "./_methods/riskGrid.ts";
 import {
   settlementPayouts,
   type SettlementPayoutsParameters,
   type SettlementPayoutsResponse,
 } from "./_methods/settlementPayouts.ts";
-import { trades, type TradesParameters, type TradesResponse } from "./_methods/trades.ts";
+import {
+  trade,
+  type TradeParameters,
+  type TradeResponse,
+  trades,
+  type TradesParameters,
+  type TradesResponse,
+} from "./_methods/trades.ts";
+import { transfers, type TransfersParameters, type TransfersResponse } from "./_methods/transfers.ts";
 
 /** A client for interacting with the Hypercall Info API. */
 export class InfoClient<C extends InfoConfig = InfoConfig> {
@@ -95,7 +124,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -130,7 +159,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -156,7 +185,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -185,7 +214,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -214,7 +243,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -243,7 +272,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -274,7 +303,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -305,7 +334,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -338,7 +367,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -369,7 +398,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -401,7 +430,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -433,7 +462,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -466,7 +495,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -499,7 +528,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -530,7 +559,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -563,7 +592,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -597,7 +626,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -629,7 +658,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -660,7 +689,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -691,7 +720,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -723,7 +752,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -754,7 +783,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -787,7 +816,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -806,6 +835,46 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
     signal?: AbortSignal,
   ): Promise<HistoricalTheosBatchResponse> {
     return historicalTheosBatch(this.config_, params, signal);
+  }
+
+  /** Request one trade by its unique trade ID. */
+  trade(params: TradeParameters, signal?: AbortSignal): Promise<TradeResponse> {
+    return trade(this.config_, params, signal);
+  }
+
+  /** Request a HyperCore order status by numeric order ID or client order ID. */
+  orderStatus(params: OrderStatusParameters, signal?: AbortSignal): Promise<OrderStatusResponse> {
+    return orderStatus(this.config_, params, signal);
+  }
+
+  /** Request the portfolio-margin risk grid for a wallet. */
+  riskGrid(params: RiskGridParameters, signal?: AbortSignal): Promise<RiskGridResponse> {
+    return riskGrid(this.config_, params, signal);
+  }
+
+  /** Return the projected referral binding for a wallet. */
+  referralBinding(params: ReferralBindingParameters, signal?: AbortSignal): Promise<ReferralBinding> {
+    return referralBinding(this.config_, params, signal);
+  }
+
+  /** Return the permanent referral code owned by a wallet. */
+  referralCodeByOwner(params: ReferralCodeByOwnerParameters, signal?: AbortSignal): Promise<ReferralCode | null> {
+    return referralCodeByOwner(this.config_, params, signal);
+  }
+
+  /** Resolve a referral code to its owner. */
+  referralCode(params: ReferralCodeParameters, signal?: AbortSignal): Promise<ReferralCode> {
+    return referralCode(this.config_, params, signal);
+  }
+
+  /** Return referred wallets and projected lifetime Hypercall fill volume. */
+  referredWallets(params: ReferredWalletsParameters, signal?: AbortSignal): Promise<ReferredWalletsResponse> {
+    return referredWallets(this.config_, params, signal);
+  }
+
+  /** Return unified deposit, withdrawal, and internal transfer history. */
+  transfers(params: TransfersParameters, signal?: AbortSignal): Promise<TransfersResponse> {
+    return transfers(this.config_, params, signal);
   }
 }
 
@@ -829,6 +898,7 @@ export type {
   ApiResponse,
   Decimal,
   Greeks,
+  InstrumentType,
   JsonRpcError,
   JsonRpcResponse,
   ListResponse,
@@ -915,6 +985,9 @@ export type {
   OrdersRequest,
   OrdersResponse,
   OrderStatus,
+  OrderStatusParameters,
+  OrderStatusRequest,
+  OrderStatusResponse,
   TimeInForce,
 } from "./_methods/orders.ts";
 export type {
@@ -927,11 +1000,8 @@ export type {
   SpanMarginSummary,
 } from "./_methods/portfolio.ts";
 export type {
-  MedalCode,
-  ProfileCompetitionRankSummary,
   ProfileData,
   ProfileMarginStats,
-  ProfileMetricMedals,
   ProfileParameters,
   ProfilePnlStats,
   ProfileRealizedPnlParameters,
@@ -945,6 +1015,27 @@ export type {
   RealizedPnlResponse,
   RealizedPnlRow,
 } from "./_methods/profile.ts";
+export type {
+  ReferralBinding,
+  ReferralBindingParameters,
+  ReferralCode,
+  ReferralCodeByOwnerParameters,
+  ReferralCodeParameters,
+  ReferredWallet,
+  ReferredWalletsParameters,
+  ReferredWalletsResponse,
+} from "./_methods/referrals.ts";
+export type {
+  ExtendedRiskMatrix,
+  InstrumentRiskRow,
+  RiskGrid,
+  RiskGridParameters,
+  RiskGridRequest,
+  RiskGridResponse,
+  RiskGridScenario,
+  RiskScenarioDefinition,
+  UnderlyingRiskGrid,
+} from "./_methods/riskGrid.ts";
 export type {
   RfqLeg,
   RfqQuote,
@@ -963,10 +1054,23 @@ export type {
 export type {
   AccountTradesParameters,
   AllTradesParameters,
+  CursorTradesParameters,
   SymbolTradesParameters,
   Trade,
+  TradeParameters,
+  TradeRequest,
+  TradeResponse,
   TradesParameters,
   TradesRequest,
   TradesResponse,
   UnderlyingTradesParameters,
 } from "./_methods/trades.ts";
+export type {
+  TransferHistoryEntry,
+  TransferPage,
+  TransfersParameters,
+  TransfersRequest,
+  TransfersResponse,
+  TransferStatus,
+  TransferType,
+} from "./_methods/transfers.ts";

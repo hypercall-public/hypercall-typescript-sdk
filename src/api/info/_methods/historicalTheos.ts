@@ -95,8 +95,8 @@ export type HistoricalTheosBatchResponse = ApiResponse<Record<string, Historical
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { historicalTheos } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { historicalTheos } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *
@@ -137,8 +137,8 @@ export function historicalTheos(
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { historicalTheosBatch } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { historicalTheosBatch } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *
