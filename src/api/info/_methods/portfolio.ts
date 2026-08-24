@@ -125,8 +125,8 @@ export type PortfolioResponse = ApiResponse<Portfolio>;
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { portfolio } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { portfolio } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *

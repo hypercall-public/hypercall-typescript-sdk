@@ -147,8 +147,8 @@ export type RealizedPnlResponse = {
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { profile } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { profile } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *
@@ -183,8 +183,8 @@ export function profile(
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { profileTrades } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { profileTrades } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *
@@ -228,8 +228,8 @@ export function profileTrades(
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { profileRealizedPnl } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { profileRealizedPnl } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *

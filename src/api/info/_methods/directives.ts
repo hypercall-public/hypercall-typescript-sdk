@@ -91,8 +91,8 @@ export type WithdrawalHistoryResponse = {
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { directiveStatus } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { directiveStatus } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *
@@ -130,8 +130,8 @@ export function directiveStatus(
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { withdrawalHistory } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { withdrawalHistory } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *

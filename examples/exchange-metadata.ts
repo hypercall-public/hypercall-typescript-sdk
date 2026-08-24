@@ -1,4 +1,4 @@
-import { type ExchangeInfoResponse, HttpTransport, InfoClient } from "@hypercall/sdk";
+import { type ExchangeInfoResponse, HttpTransport, InfoClient } from "@hypercallxyz/sdk";
 
 const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
 const info = new InfoClient({ transport });

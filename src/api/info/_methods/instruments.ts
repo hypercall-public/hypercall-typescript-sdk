@@ -95,8 +95,8 @@ export type InstrumentsResponse = JsonRpcResponse<Instrument[]>;
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { instruments } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { instruments } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *

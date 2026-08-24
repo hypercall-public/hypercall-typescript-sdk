@@ -75,8 +75,8 @@ export type FillsResponse = PaginatedResponse<Fill>;
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { fills } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { fills } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *

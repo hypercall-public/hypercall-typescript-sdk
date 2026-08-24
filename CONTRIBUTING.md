@@ -1,4 +1,4 @@
-# Contributing to @hypercall/sdk
+# Contributing to @hypercallxyz/sdk
 
 ## Development Setup
 

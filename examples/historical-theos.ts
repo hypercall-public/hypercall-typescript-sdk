@@ -1,4 +1,4 @@
-import { type HistoricalTheoData, HttpTransport, InfoClient, type Instrument } from "@hypercall/sdk";
+import { type HistoricalTheoData, HttpTransport, InfoClient, type Instrument } from "@hypercallxyz/sdk";
 
 const currency = "SPCX";
 const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });

@@ -36,7 +36,7 @@ import {
   SUBMIT_AUTO_EXECUTE_RFQ_TYPES,
   SUBMIT_RFQ_TYPES,
   WITHDRAW_USDC_TYPES,
-} from "@hypercall/sdk/signing";
+} from "@hypercallxyz/sdk/signing";
 
 const wallet = "0xe55b5e5e38f73c30aa367d310d6247f3f9a5e86e";
 const agent = "0xab7bab0e4c09ff447863f507c16090a9a02792d2";

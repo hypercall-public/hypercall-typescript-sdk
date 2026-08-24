@@ -296,8 +296,8 @@ export type LiquidationsResponse = {
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { liquidationStatus } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { liquidationStatus } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *
@@ -332,8 +332,8 @@ export function liquidationStatus(
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { liquidationHistory } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { liquidationHistory } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *
@@ -374,8 +374,8 @@ export function liquidationHistory(
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { liquidations } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { liquidations } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *

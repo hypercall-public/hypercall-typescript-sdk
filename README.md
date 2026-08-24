@@ -6,14 +6,14 @@ The package exposes:
 
 - **Transport:** `HttpTransport`
 - **Clients:** `InfoClient`, `ExchangeClient`
-- **Low-level methods:** `@hypercall/sdk/api/info`, `@hypercall/sdk/api/exchange`
-- **Signing helpers:** `@hypercall/sdk/signing`
+- **Low-level methods:** `@hypercallxyz/sdk/api/info`, `@hypercallxyz/sdk/api/exchange`
+- **Signing helpers:** `@hypercallxyz/sdk/signing`
 - **Types:** request, response, and domain types for the exported API methods
 
 ## Installation
 
 ```bash
-pnpm add @hypercall/sdk
+pnpm add @hypercallxyz/sdk
 ```
 
 For local tarball testing before the package is published:
@@ -31,7 +31,7 @@ This installs the same package shape npm consumers receive.
 ## Quick Start
 
 ```ts
-import { HttpTransport, InfoClient } from "@hypercall/sdk";
+import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
 
 const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
 const info = new InfoClient({ transport });
@@ -77,7 +77,7 @@ deno task example examples/read-markets.ts
 ```
 
 ```ts
-import { HttpTransport, InfoClient } from "@hypercall/sdk";
+import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
 
 const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
 const info = new InfoClient({ transport });
@@ -107,7 +107,7 @@ Reduce-only place and replace requests must use the matching `PlaceOrderReduceOn
 type and send `reduce_only: true`.
 
 ```ts
-import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
 
 const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
 const exchange = new ExchangeClient({ transport });
@@ -232,7 +232,7 @@ username, and notification helpers live in the Hypercall frontend instead of thi
 app environment.
 
 ```ts
-import { APPROVE_AGENT_TYPES, buildApproveAgentValue, buildTypedData } from "@hypercall/sdk/signing";
+import { APPROVE_AGENT_TYPES, buildApproveAgentValue, buildTypedData } from "@hypercallxyz/sdk/signing";
 
 const message = buildApproveAgentValue(
   "0x0000000000000000000000000000000000000000",
@@ -250,7 +250,7 @@ console.log(typedData.primaryType);
 ```
 
 ```ts
-import { buildPlaceOrderValue, buildTypedData, PLACE_ORDER_TYPES } from "@hypercall/sdk/signing";
+import { buildPlaceOrderValue, buildTypedData, PLACE_ORDER_TYPES } from "@hypercallxyz/sdk/signing";
 
 const order = buildPlaceOrderValue({
   wallet: "0x0000000000000000000000000000000000000000",
@@ -571,11 +571,11 @@ console.log(publicLiquidations.data[0]?.auction_id);
 
 ## Low-Level Method Imports
 
-Low-level methods are available from `@hypercall/sdk/api/info` for direct, tree-shakeable access.
+Low-level methods are available from `@hypercallxyz/sdk/api/info` for direct, tree-shakeable access.
 
 ```ts
-import { HttpTransport } from "@hypercall/sdk";
-import { markets } from "@hypercall/sdk/api/info";
+import { HttpTransport } from "@hypercallxyz/sdk";
+import { markets } from "@hypercallxyz/sdk/api/info";
 
 const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
 
@@ -661,7 +661,7 @@ import type {
   TradesResponse,
   TransfersResponse,
   WithdrawalHistoryResponse,
-} from "@hypercall/sdk";
+} from "@hypercallxyz/sdk";
 ```
 
 ## Endpoint Reference

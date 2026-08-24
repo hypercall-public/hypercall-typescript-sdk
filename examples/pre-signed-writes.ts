@@ -18,7 +18,7 @@ import {
   type SubmitRfqParameters,
   type SubmitStandardMarginLiquidationParameters,
   type WithdrawUsdcParameters,
-} from "@hypercall/sdk";
+} from "@hypercallxyz/sdk";
 
 const wallet = "0xe55b5e5e38f73c30aa367d310d6247f3f9a5e86e";
 const agent = "0xab7bab0e4c09ff447863f507c16090a9a02792d2";

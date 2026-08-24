@@ -129,7 +129,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -161,7 +161,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -194,7 +194,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -230,7 +230,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -268,7 +268,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -306,7 +306,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -345,7 +345,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -384,7 +384,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -417,7 +417,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -449,7 +449,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -486,7 +486,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -521,7 +521,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -555,7 +555,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });
@@ -592,7 +592,7 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
    *
    * @example
    * ```ts
-   * import { ExchangeClient, HttpTransport } from "@hypercall/sdk";
+   * import { ExchangeClient, HttpTransport } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new ExchangeClient({ transport });

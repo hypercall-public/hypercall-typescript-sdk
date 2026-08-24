@@ -68,8 +68,8 @@ export type ReplaceOrderOptions = ExchangeRequestOptions;
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { replaceOrder } from "@hypercall/sdk/api/exchange";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { replaceOrder } from "@hypercallxyz/sdk/api/exchange";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *

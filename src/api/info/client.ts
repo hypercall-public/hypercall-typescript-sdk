@@ -124,7 +124,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -159,7 +159,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -185,7 +185,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -214,7 +214,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -243,7 +243,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -272,7 +272,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -303,7 +303,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -334,7 +334,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -367,7 +367,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -398,7 +398,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -430,7 +430,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -462,7 +462,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -495,7 +495,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -528,7 +528,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -559,7 +559,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -592,7 +592,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -626,7 +626,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -658,7 +658,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -689,7 +689,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -720,7 +720,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -752,7 +752,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -783,7 +783,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });
@@ -816,7 +816,7 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
    *
    * @example
    * ```ts
-   * import { HttpTransport, InfoClient } from "@hypercall/sdk";
+   * import { HttpTransport, InfoClient } from "@hypercallxyz/sdk";
    *
    * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
    * const client = new InfoClient({ transport });

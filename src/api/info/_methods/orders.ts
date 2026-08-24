@@ -98,8 +98,8 @@ export type OrderStatusResponse = {
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { orders } from "@hypercall/sdk/api/info";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { orders } from "@hypercallxyz/sdk/api/info";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *

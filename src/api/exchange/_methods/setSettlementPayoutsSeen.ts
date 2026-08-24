@@ -58,8 +58,8 @@ export type SetSettlementPayoutsSeenOptions = ExchangeRequestOptions;
  *
  * @example
  * ```ts
- * import { HttpTransport } from "@hypercall/sdk";
- * import { setSettlementPayoutsSeen } from "@hypercall/sdk/api/exchange";
+ * import { HttpTransport } from "@hypercallxyz/sdk";
+ * import { setSettlementPayoutsSeen } from "@hypercallxyz/sdk/api/exchange";
  *
  * const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
  *
