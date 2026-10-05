@@ -1,0 +1,851 @@
+{
+  "schemas": {
+    "ApprovalRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "manager": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "signature": {
+          "description": "Manager signature over Hypercall's timestamped authentication message.",
+          "type": "string"
+        },
+        "timestamp": {
+          "description": "Unix timestamp in seconds included in the EIP-191 authentication message.",
+          "format": "int64",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "account",
+        "manager",
+        "timestamp",
+        "signature"
+      ],
+      "type": "object"
+    },
+    "ApprovalRequestResponse": {
+      "properties": {
+        "apiWalletAddress": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "apiWalletName": {
+          "description": "Stable name registered for the API wallet on HyperLiquid.",
+          "type": "string"
+        },
+        "expiresAtMs": {
+          "description": "Last Unix millisecond at which the signed approval may be submitted.",
+          "example": 1785672300000,
+          "format": "int64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "issuedAtMs": {
+          "description": "Server issuance time encoded into `nonce`, as Unix milliseconds.",
+          "example": 1785672000000,
+          "format": "int64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "nonce": {
+          "description": "Nonce included in the EIP-712 approval payload. Copy it without modification.",
+          "example": "18446744073709551615",
+          "type": "string"
+        },
+        "teeWalletId": {
+          "description": "Opaque TEE wallet identity. Echo this value when submitting the signature.",
+          "example": "0x2222222222222222222222222222222222222222222222222222222222222222",
+          "type": "string"
+        },
+        "typedData": {
+          "description": "EIP-712 payload for the account manager to sign.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "teeWalletId",
+        "apiWalletAddress",
+        "apiWalletName",
+        "nonce",
+        "issuedAtMs",
+        "expiresAtMs",
+        "typedData"
+      ],
+      "type": "object"
+    },
+    "ApprovalSubmitRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "authenticationSignature": {
+          "description": "Manager signature over Hypercall's timestamped authentication message.",
+          "type": "string"
+        },
+        "manager": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "nonce": {
+          "description": "Nonce returned by the approval-request endpoint.",
+          "example": "18446744073709551615",
+          "type": "string"
+        },
+        "signature": {
+          "description": "Account manager's EIP-712 signature over the returned typed data.",
+          "type": "string"
+        },
+        "teeWalletId": {
+          "description": "Opaque identity returned by `POST /v1/tee-api-wallet/approval-request`.",
+          "example": "0x2222222222222222222222222222222222222222222222222222222222222222",
+          "type": "string"
+        },
+        "timestamp": {
+          "description": "Unix timestamp in seconds included in the EIP-191 authentication message.",
+          "format": "int64",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "account",
+        "manager",
+        "timestamp",
+        "authenticationSignature",
+        "teeWalletId",
+        "nonce",
+        "signature"
+      ],
+      "type": "object"
+    },
+    "PerpLiquidationBinding": {
+      "description": "The liquidation reached first as the market's price moves.",
+      "enum": [
+        "hyperliquid",
+        "portfolio_margin"
+      ],
+      "type": "string"
+    },
+    "PerpPreviewMargin": {
+      "description": "Portfolio margin before and after the action, as admission charges it:\nexecuted positions plus every resting order and pending perp reservation,\nwith the previewed orders added as further reservations.",
+      "properties": {
+        "equity": {
+          "type": "string"
+        },
+        "initialAvailableAfter": {
+          "type": "string"
+        },
+        "initialRequiredAfter": {
+          "type": "string"
+        },
+        "initialRequiredBefore": {
+          "type": "string"
+        },
+        "maintenanceRequiredAfter": {
+          "type": "string"
+        },
+        "shortfall": {
+          "description": "Initial margin after minus equity when positive, otherwise null.",
+          "nullable": true,
+          "type": "string"
+        }
+      },
+      "required": [
+        "equity",
+        "initialRequiredBefore",
+        "initialRequiredAfter",
+        "initialAvailableAfter",
+        "maintenanceRequiredAfter"
+      ],
+      "type": "object"
+    },
+    "PerpPreviewMaxSize": {
+      "description": "Largest same-side size that still passes the real admission check.",
+      "properties": {
+        "notional": {
+          "type": "string"
+        },
+        "sz": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sz",
+        "notional"
+      ],
+      "type": "object"
+    },
+    "PerpPreviewRequest": {
+      "description": "Request body of `POST /v1/tee-perp/preview`. Read-only; no signature.",
+      "properties": {
+        "account": {
+          "description": "Trading account (or its manager wallet, resolved like other reads).",
+          "type": "string"
+        },
+        "action": {
+          "$ref": "#/components/schemas/PerpPreviewAction"
+        }
+      },
+      "required": [
+        "account",
+        "action"
+      ],
+      "type": "object"
+    },
+    "PerpPreviewResponse": {
+      "description": "Response of `POST /v1/tee-perp/preview`.",
+      "properties": {
+        "decision": {
+          "$ref": "#/components/schemas/PerpPreviewDecision"
+        },
+        "liquidationBinding": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/PerpLiquidationBinding"
+            }
+          ],
+          "nullable": true
+        },
+        "liquidationPxAfter": {
+          "description": "The same price after the action: the previewed orders filled at their\nlimit prices (trigger exits excluded), or the leverage change applied.",
+          "nullable": true,
+          "type": "string"
+        },
+        "liquidationPxBefore": {
+          "description": "Current projected liquidation price of the action's market: the\nstricter (reached first) of the Hyperliquid compartment liquidation\nand the Hypercall PM liquidation. Null when neither is reached (for\nexample no exposure to the market); `notes` gives any unavailable\ninput.",
+          "nullable": true,
+          "type": "string"
+        },
+        "margin": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/PerpPreviewMargin"
+            }
+          ],
+          "nullable": true
+        },
+        "maxSize": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/PerpPreviewMaxSize"
+            }
+          ],
+          "nullable": true
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "reason": {
+          "description": "Exactly the text the real submit would return.",
+          "nullable": true,
+          "type": "string"
+        },
+        "reasonCode": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/PerpRejectionReasonCode"
+            }
+          ],
+          "nullable": true
+        },
+        "venueLiquidation": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/VenueLiquidationRisk"
+            }
+          ],
+          "nullable": true
+        }
+      },
+      "required": [
+        "decision",
+        "notes"
+      ],
+      "type": "object"
+    },
+    "PerpRejectionReasonCode": {
+      "description": "Stable machine code for why a perp action is (or would be) rejected. The\npreview and the real submit responses carry the same code for the same\nrejection.",
+      "enum": [
+        "insufficient_margin",
+        "mode_change_with_position",
+        "stale_position_snapshot",
+        "market_not_supported",
+        "unified_mode_required",
+        "reduce_only_exceeds_position",
+        "trading_halted",
+        "account_not_pm",
+        "venue_risk_unavailable",
+        "price_unavailable",
+        "liquidation_pending",
+        "account_health_unavailable",
+        "leverage_requires_flat_account",
+        "action_not_supported",
+        "invalid_order",
+        "engine_rejected"
+      ],
+      "type": "string"
+    },
+    "TeePerpCancelByOidSubmitRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "action": {
+          "$ref": "#/components/schemas/HlCancelByOidAction"
+        },
+        "nonce": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "account",
+        "nonce",
+        "action",
+        "signature"
+      ],
+      "type": "object"
+    },
+    "TeePerpCancelResponse": {
+      "properties": {
+        "account": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "apiWallet": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "cloid": {
+          "type": "string"
+        },
+        "directiveId": {
+          "type": "string"
+        },
+        "engineSeq": {
+          "nullable": true,
+          "type": "string"
+        },
+        "errorCode": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TeePerpErrorCode"
+            }
+          ],
+          "nullable": true
+        },
+        "message": {
+          "nullable": true,
+          "type": "string"
+        },
+        "stage": {
+          "$ref": "#/components/schemas/TeePerpOrderStage"
+        },
+        "venueResponseHash": {
+          "nullable": true,
+          "type": "string"
+        }
+      },
+      "required": [
+        "stage",
+        "directiveId",
+        "account",
+        "apiWallet",
+        "cloid"
+      ],
+      "type": "object"
+    },
+    "TeePerpCancelSubmitRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "action": {
+          "$ref": "#/components/schemas/HlCancelByCloidAction"
+        },
+        "nonce": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "account",
+        "nonce",
+        "action",
+        "signature"
+      ],
+      "type": "object"
+    },
+    "TeePerpErrorCode": {
+      "description": "Stable, non-sensitive failure classification returned to TEE perp clients.",
+      "enum": [
+        "engine_admission_rejected",
+        "duplicate_directive",
+        "trading_unavailable",
+        "execution_unavailable",
+        "authorization_failed",
+        "invalid_request",
+        "wallet_not_admitted",
+        "wallet_admission_mismatch",
+        "wallet_admission_unavailable",
+        "parent_credentials_unavailable",
+        "parent_kms_request_invalid",
+        "enclave_unavailable",
+        "enclave_kms_request_invalid",
+        "enclave_wallet_unavailable",
+        "enclave_clock_unavailable",
+        "enclave_policy_rejected",
+        "enclave_authorization_rejected",
+        "enclave_wallet_mismatch",
+        "enclave_intent_expired",
+        "enclave_intent_ttl_exceeded",
+        "enclave_signing_failed",
+        "enclave_attestation_failed",
+        "enclave_response_invalid",
+        "parent_response_invalid",
+        "signed_request_invalid",
+        "internal_unavailable",
+        "venue_rejected",
+        "builder_not_approved",
+        "submission_outcome_unknown"
+      ],
+      "type": "string"
+    },
+    "TeePerpLeverageResponse": {
+      "properties": {
+        "account": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "apiWallet": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "asset": {
+          "format": "int32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "engineSeq": {
+          "nullable": true,
+          "type": "string"
+        },
+        "errorCode": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TeePerpErrorCode"
+            }
+          ],
+          "nullable": true
+        },
+        "isCross": {
+          "type": "boolean"
+        },
+        "leverage": {
+          "format": "int32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message": {
+          "nullable": true,
+          "type": "string"
+        },
+        "reasonCode": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/PerpRejectionReasonCode"
+            }
+          ],
+          "nullable": true
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "stage": {
+          "$ref": "#/components/schemas/TeePerpOrderStage"
+        },
+        "venueResponseHash": {
+          "nullable": true,
+          "type": "string"
+        }
+      },
+      "required": [
+        "stage",
+        "requestId",
+        "account",
+        "apiWallet",
+        "asset",
+        "isCross",
+        "leverage"
+      ],
+      "type": "object"
+    },
+    "TeePerpLeverageSubmitRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "action": {
+          "$ref": "#/components/schemas/TeePerpLeverageAction"
+        },
+        "nonce": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "account",
+        "nonce",
+        "action",
+        "signature"
+      ],
+      "type": "object"
+    },
+    "TeePerpMarketEntry": {
+      "description": "One configured perp market and whether the TEE routes accept it.",
+      "properties": {
+        "assetId": {
+          "description": "Hyperliquid asset id the signed order names.",
+          "format": "int32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "dex": {
+          "description": "HIP-3 dex name for builder-deployed markets, e.g. `xyz`.",
+          "nullable": true,
+          "type": "string"
+        },
+        "hyperliquidCoin": {
+          "description": "Exact, case-sensitive Hyperliquid coin, e.g. `xyz:SNDK`.",
+          "type": "string"
+        },
+        "message": {
+          "nullable": true,
+          "type": "string"
+        },
+        "missing": {
+          "description": "The missing requirement, e.g. `price_source`.",
+          "nullable": true,
+          "type": "string"
+        },
+        "reasonCode": {
+          "description": "`market_not_supported` when `supported` is false.",
+          "nullable": true,
+          "type": "string"
+        },
+        "supported": {
+          "description": "Whether market-level requirements hold. Per-Account venue schedule\nobservation is checked at order time.",
+          "type": "boolean"
+        },
+        "symbol": {
+          "description": "Engine perp symbol, e.g. `SNDK-PERP`.",
+          "type": "string"
+        },
+        "underlying": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "assetId",
+        "symbol",
+        "underlying",
+        "hyperliquidCoin",
+        "supported"
+      ],
+      "type": "object"
+    },
+    "TeePerpMarketsResponse": {
+      "description": "Configured TEE perp markets with their market-level support.",
+      "properties": {
+        "markets": {
+          "items": {
+            "$ref": "#/components/schemas/TeePerpMarketEntry"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "markets"
+      ],
+      "type": "object"
+    },
+    "TeePerpOrderBatchChildResponse": {
+      "properties": {
+        "cloid": {
+          "description": "The child's cloid as 0x-prefixed 16-byte hex.",
+          "type": "string"
+        },
+        "directiveId": {
+          "description": "Engine reservation identity of this child.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "directiveId",
+        "cloid"
+      ],
+      "type": "object"
+    },
+    "TeePerpOrderBatchResponse": {
+      "properties": {
+        "account": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "apiWallet": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "batchId": {
+          "type": "string"
+        },
+        "children": {
+          "description": "Children in submission order.",
+          "items": {
+            "$ref": "#/components/schemas/TeePerpOrderBatchChildResponse"
+          },
+          "type": "array"
+        },
+        "engineSeq": {
+          "description": "WAL offset for a newly committed batch. Exact retries return null.",
+          "nullable": true,
+          "type": "string"
+        },
+        "errorCode": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TeePerpErrorCode"
+            }
+          ],
+          "nullable": true
+        },
+        "grouping": {
+          "$ref": "#/components/schemas/TeePerpOrderGrouping"
+        },
+        "message": {
+          "nullable": true,
+          "type": "string"
+        },
+        "reasonCode": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/PerpRejectionReasonCode"
+            }
+          ],
+          "nullable": true
+        },
+        "stage": {
+          "$ref": "#/components/schemas/TeePerpOrderStage"
+        },
+        "venueResponseHash": {
+          "nullable": true,
+          "type": "string"
+        }
+      },
+      "required": [
+        "stage",
+        "batchId",
+        "account",
+        "apiWallet",
+        "grouping",
+        "children"
+      ],
+      "type": "object"
+    },
+    "TeePerpOrderBatchSubmitRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "action": {
+          "$ref": "#/components/schemas/TeePerpOrderBatchAction"
+        },
+        "nonce": {
+          "type": "string"
+        },
+        "signature": {
+          "description": "App-key EIP-712 signature over `HCPerpOrderBatch`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "account",
+        "nonce",
+        "action",
+        "signature"
+      ],
+      "type": "object"
+    },
+    "TeePerpOrderResponse": {
+      "properties": {
+        "account": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "apiWallet": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "cloid": {
+          "type": "string"
+        },
+        "directiveId": {
+          "type": "string"
+        },
+        "engineSeq": {
+          "description": "WAL offset for a newly committed directive. Exact retries return null.",
+          "nullable": true,
+          "type": "string"
+        },
+        "errorCode": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TeePerpErrorCode"
+            }
+          ],
+          "nullable": true
+        },
+        "message": {
+          "nullable": true,
+          "type": "string"
+        },
+        "reasonCode": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/PerpRejectionReasonCode"
+            }
+          ],
+          "nullable": true
+        },
+        "stage": {
+          "$ref": "#/components/schemas/TeePerpOrderStage"
+        },
+        "venueResponseHash": {
+          "nullable": true,
+          "type": "string"
+        }
+      },
+      "required": [
+        "stage",
+        "directiveId",
+        "account",
+        "apiWallet",
+        "cloid"
+      ],
+      "type": "object"
+    },
+    "TeePerpOrderStage": {
+      "enum": [
+        "accepted",
+        "rejected",
+        "not_submitted",
+        "unknown"
+      ],
+      "type": "string"
+    },
+    "TeePerpSubmitRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "action": {
+          "$ref": "#/components/schemas/HlLimitOrderAction"
+        },
+        "nonce": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "account",
+        "nonce",
+        "action",
+        "signature"
+      ],
+      "type": "object"
+    },
+    "TeePerpTriggerSubmitRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "action": {
+          "$ref": "#/components/schemas/TeePerpOrderWire"
+        },
+        "nonce": {
+          "type": "string"
+        },
+        "signature": {
+          "description": "App-key EIP-712 signature over `HCPerpTriggerOrder`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "account",
+        "nonce",
+        "action",
+        "signature"
+      ],
+      "type": "object"
+    },
+    "TeePerpVenueActionResponse": {
+      "properties": {
+        "account": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "actionKind": {
+          "type": "string"
+        },
+        "apiWallet": {
+          "$ref": "#/components/schemas/WalletAddress"
+        },
+        "engineSeq": {
+          "nullable": true,
+          "type": "string"
+        },
+        "errorCode": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TeePerpErrorCode"
+            }
+          ],
+          "nullable": true
+        },
+        "message": {
+          "nullable": true,
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "stage": {
+          "$ref": "#/components/schemas/TeePerpOrderStage"
+        },
+        "venueResponseHash": {
+          "nullable": true,
+          "type": "string"
+        }
+      },
+      "required": [
+        "stage",
+        "requestId",
+        "account",
+        "apiWallet",
+        "actionKind"
+      ],
+      "type": "object"
+    }
+  },
+  "source": "hypercall server OpenAPI (components.schemas), TEE perp subset"
+}

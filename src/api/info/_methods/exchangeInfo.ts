@@ -28,6 +28,11 @@ export type ExchangeInfoResponse = {
   chain_id: number;
   /** EIP-712 signing domain info. */
   signing_domain: SigningDomainInfo;
+  /**
+   * Hyperliquid builder attached to every TEE perp order. Accounts approve it once with
+   * `Account.approveZeroFeeBuilder(builder)`; see `resolveHypercallBuilderAddress`.
+   */
+  hl_builder_address?: Address | null;
 };
 
 /**

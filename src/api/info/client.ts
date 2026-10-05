@@ -103,6 +103,12 @@ import {
   type TradesResponse,
 } from "./_methods/trades.ts";
 import { transfers, type TransfersParameters, type TransfersResponse } from "./_methods/transfers.ts";
+import { teePerpMarkets, type TeePerpMarketsResponse } from "./_methods/teePerpMarkets.ts";
+import {
+  teePerpPreview,
+  type TeePerpPreviewParameters,
+  type TeePerpPreviewResponse,
+} from "./_methods/teePerpPreview.ts";
 
 /** A client for interacting with the Hypercall Info API. */
 export class InfoClient<C extends InfoConfig = InfoConfig> {
@@ -876,6 +882,33 @@ export class InfoClient<C extends InfoConfig = InfoConfig> {
   transfers(params: TransfersParameters, signal?: AbortSignal): Promise<TransfersResponse> {
     return transfers(this.config_, params, signal);
   }
+
+  /**
+   * List the perp markets configured for TEE trading and whether each is supported.
+   *
+   * @param signal {@link https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal | AbortSignal} to cancel the request.
+   * @return Configured TEE perp markets.
+   *
+   * @throws {TransportError} When the transport layer throws an error.
+   */
+  teePerpMarkets(signal?: AbortSignal): Promise<TeePerpMarketsResponse> {
+    return teePerpMarkets(this.config_, signal);
+  }
+
+  /**
+   * Preview a TEE perp order, order batch, or leverage change: admission decision, reason code,
+   * margin before and after, liquidation prices, and max size. Read-only; no signature.
+   *
+   * @param params Preview request.
+   * @param signal {@link https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal | AbortSignal} to cancel the request.
+   * @return Preview response envelope.
+   *
+   * @throws {ValidationError} When the request parameters fail validation (before sending).
+   * @throws {TransportError} When the transport layer throws an error.
+   */
+  teePerpPreview(params: TeePerpPreviewParameters, signal?: AbortSignal): Promise<TeePerpPreviewResponse> {
+    return teePerpPreview(this.config_, params, signal);
+  }
 }
 
 export type {
@@ -1074,3 +1107,23 @@ export type {
   TransferStatus,
   TransferType,
 } from "./_methods/transfers.ts";
+export type { TeePerpMarketEntry, TeePerpMarketsResponse } from "./_methods/teePerpMarkets.ts";
+export type {
+  PerpLiquidationBinding,
+  PerpPreview,
+  PerpPreviewAction,
+  PerpPreviewMargin,
+  PerpPreviewOrder,
+  PerpPreviewOrderType,
+  PerpPreviewTif,
+  TeePerpPreviewParameters,
+  TeePerpPreviewRequest,
+  TeePerpPreviewResponse,
+  VenueCompartmentRisk,
+  VenueLiquidationRisk,
+} from "./_methods/teePerpPreview.ts";
+export type {
+  HyperliquidActiveAssetDataResponse,
+  HyperliquidUserRoleResponse,
+  PerpLeverage,
+} from "./_methods/hyperliquid.ts";
