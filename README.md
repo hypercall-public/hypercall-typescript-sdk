@@ -225,6 +225,73 @@ const referralCode = await exchange.createReferralCode({
 console.log(referralCode.code);
 ```
 
+## TEE Perp Trading
+
+Perp orders on the TEE rail are signed by the account's API wallet in the `HypercallApiSign` EIP-712 domain, then
+executed on Hyperliquid by Hypercall's TEE API wallet. `@hypercallxyz/sdk/signing` builds the exact typed data the
+server verifies; you sign it with any EIP-712 signer.
+
+| Action                                                                      | Exchange method                               | Signed type                    |
+| --------------------------------------------------------------------------- | --------------------------------------------- | ------------------------------ |
+| Limit order (GTC, IOC, ALO); market = IOC at a slippage bound               | `teePerpSubmitOrder`                          | `HLOrder`                      |
+| Stop / take-profit, market or limit                                         | `teePerpSubmitTriggerOrder`                   | `HCPerpTriggerOrder`           |
+| Scale (`na`), entry + TP/SL (`normalTpsl`), position TP/SL (`positionTpsl`) | `teePerpSubmitOrderBatch`                     | `HCPerpOrderBatch`             |
+| Cancel by cloid / by order id                                               | `teePerpCancelByCloid` / `teePerpCancelByOid` | `HLCancelByCloid` / `HLCancel` |
+| Leverage and cross/isolated mode                                            | `teePerpUpdateLeverage`                       | `HCPerpLeverageChange`         |
+
+Rules the server enforces:
+
+- The nonce is a millisecond timestamp on the server clock. The server sets the venue expiry to `nonce + 9000` and
+  accepts it only inside its own 10 second window. Use `TeePerpNonceManager` with `createServerClock({ apiUrl })`, which
+  reads the `/health` `Date` header.
+- Prices and sizes are 1e8-scaled integer strings, `encodedTif` is 1 = ALO, 2 = GTC, 3 = IOC, and `cloid` is a non-zero
+  decimal u128. Batch child cloids are `(nonce << 8) + index + 1` (`deriveTeePerpBatchCloid`).
+- Only `stage: "accepted"` means the venue accepted the action. `reasonCode` is the same code the preview returns.
+- `errorCode: "builder_not_approved"`: the account must approve Hypercall's builder once. Send
+  `encodeApproveZeroFeeBuilderCalldata(resolveHypercallBuilderAddress(await info.exchangeInfo()))` from the manager
+  wallet to the Account.sol address on HyperEVM (Account 0.2.4 `approveZeroFeeBuilder`).
+
+```ts
+import { ExchangeClient, HttpTransport, InfoClient } from "@hypercallxyz/sdk";
+import {
+  buildHlLimitOrderAction,
+  buildTeePerpLimitOrderTypedData,
+  createServerClock,
+  formatPerpMarketLimitPrice,
+  TeePerpNonceManager,
+} from "@hypercallxyz/sdk/signing";
+
+const transport = new HttpTransport({ apiUrl: "https://api.hypercall.xyz" });
+const exchange = new ExchangeClient({ transport });
+const info = new InfoClient({ transport });
+const nonces = new TeePerpNonceManager(createServerClock({ apiUrl: "https://api.hypercall.xyz" }));
+
+const account = "0x0000000000000000000000000000000000000000";
+const price = formatPerpMarketLimitPrice({ referencePrice: "100000", side: "Buy", sizeDecimals: 5 });
+const preview = await info.teePerpPreview({
+  account,
+  action: { kind: "order", asset: 0, isBuy: true, limitPx: price, sz: "0.01", orderType: { limit: { tif: "Ioc" } } },
+});
+console.log(preview.data?.decision, preview.data?.margin, preview.data?.liquidationPxAfter);
+
+const nonce = await nonces.next();
+const action = buildHlLimitOrderAction({ asset: 0, isBuy: true, price, size: "0.01", tif: "ioc", cloid: nonce });
+const typedData = buildTeePerpLimitOrderTypedData({ account, nonce, action, chainId: 999 });
+const signature = await apiWallet.signTypedData(typedData); // your EIP-712 signer
+const placed = await exchange.teePerpSubmitOrder({ account, nonce, action, signature });
+console.log(placed.stage, placed.reasonCode);
+```
+
+Enrolling the TEE API wallet (manager wallet, once per account): sign `buildHypercallAuthenticationMessage(timestamp)`
+(EIP-191), call `teeApiWalletApprovalRequest`, sign the returned `typedData` (`HLAddApiWallet`, `HypercallManagerSign`
+domain), call `teeApiWalletApprovalSubmit`, then poll `directiveStatus` with `teeApiWalletApprovalProgress`.
+`hyperliquidUserRole` plus `isTeeApiWalletActiveForAccount` reports whether the wallet is enrolled, and
+`hyperliquidActiveAssetLeverage` reads leverage back after `teePerpUpdateLeverage` (use a transport pointed at
+`HYPERLIQUID_MAINNET_API_URL`).
+
+Market support: `info.teePerpMarkets()`. Scale legs: `buildPerpScaleOrderLegs`. TWAP and order modification have no TEE
+route and are not offered. See `examples/tee-perp-trading.ts`.
+
 ## Signing Helpers
 
 The signing subpath exposes EIP-712 maps and value builders for public SDK write actions. Product-local profile,
@@ -700,6 +767,8 @@ import type {
 | `info.liquidationStatus(params)`               | `{ wallet }`                                                                       | `LiquidationStatusResponse`    |
 | `info.liquidationHistory(params)`              | `{ wallet, limit?, offset? }`                                                      | `LiquidationHistoryResponse`   |
 | `info.liquidations(params)`                    | `{ cursor?, limit?, wallet?, status?, state?, marginMode?, liquidationMode? }`     | `LiquidationsResponse`         |
+| `info.teePerpMarkets()`                        | none                                                                               | `TeePerpMarketsResponse`       |
+| `info.teePerpPreview(params)`                  | `{ account, action: order \| order_batch \| leverage }`                            | `TeePerpPreviewResponse`       |
 
 Hypercall API docs: https://docs.hypercall.xyz/docs/trading/over-api/
 

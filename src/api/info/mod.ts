@@ -29,3 +29,6 @@ export * from "./_methods/riskGrid.ts";
 export * from "./_methods/settlementPayouts.ts";
 export * from "./_methods/trades.ts";
 export * from "./_methods/transfers.ts";
+export * from "./_methods/hyperliquid.ts";
+export * from "./_methods/teePerpMarkets.ts";
+export * from "./_methods/teePerpPreview.ts";

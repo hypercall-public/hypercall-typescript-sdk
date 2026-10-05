@@ -106,6 +106,52 @@ import {
   type WithdrawUsdcParameters,
   type WithdrawUsdcResponse,
 } from "./_methods/withdrawUsdc.ts";
+import {
+  teeApiWalletApprovalRequest,
+  type TeeApiWalletApprovalRequestOptions,
+  type TeeApiWalletApprovalRequestParameters,
+  type TeeApiWalletApprovalRequestResponse,
+  teeApiWalletApprovalSubmit,
+  type TeeApiWalletApprovalSubmitOptions,
+  type TeeApiWalletApprovalSubmitParameters,
+  type TeeApiWalletApprovalSubmitResponse,
+} from "./_methods/teeApiWalletApproval.ts";
+import {
+  teePerpCancelByCloid,
+  type TeePerpCancelByCloidOptions,
+  type TeePerpCancelByCloidParameters,
+  type TeePerpCancelByCloidResponse,
+} from "./_methods/teePerpCancelByCloid.ts";
+import {
+  teePerpCancelByOid,
+  type TeePerpCancelByOidOptions,
+  type TeePerpCancelByOidParameters,
+  type TeePerpCancelByOidResponse,
+} from "./_methods/teePerpCancelByOid.ts";
+import {
+  teePerpSubmitOrder,
+  type TeePerpSubmitOrderOptions,
+  type TeePerpSubmitOrderParameters,
+  type TeePerpSubmitOrderResponse,
+} from "./_methods/teePerpSubmitOrder.ts";
+import {
+  teePerpSubmitOrderBatch,
+  type TeePerpSubmitOrderBatchOptions,
+  type TeePerpSubmitOrderBatchParameters,
+  type TeePerpSubmitOrderBatchResponse,
+} from "./_methods/teePerpSubmitOrderBatch.ts";
+import {
+  teePerpSubmitTriggerOrder,
+  type TeePerpSubmitTriggerOrderOptions,
+  type TeePerpSubmitTriggerOrderParameters,
+  type TeePerpSubmitTriggerOrderResponse,
+} from "./_methods/teePerpSubmitTriggerOrder.ts";
+import {
+  teePerpUpdateLeverage,
+  type TeePerpUpdateLeverageOptions,
+  type TeePerpUpdateLeverageParameters,
+  type TeePerpUpdateLeverageResponse,
+} from "./_methods/teePerpUpdateLeverage.ts";
 
 /** A client for interacting with signed Hypercall Exchange API methods. */
 export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
@@ -643,9 +689,152 @@ export class ExchangeClient<C extends ExchangeConfig = ExchangeConfig> {
   setReferrer(params: SetReferrerParameters, opts?: SetReferrerOptions): Promise<SetReferrerResponse> {
     return setReferrer(this.config_, params, opts);
   }
+
+  /**
+   * Submit one API-wallet-signed limit order (GTC, IOC, ALO) to `POST /v1/tee-perp/orders/submit`.
+   *
+   * Signing: pre-signed EIP-712 `HLOrder` payload in the `HypercallApiSign` domain
+   * (`buildTeePerpLimitOrderTypedData`), nonce stamped on the server clock.
+   */
+  teePerpSubmitOrder(
+    params: TeePerpSubmitOrderParameters,
+    opts?: TeePerpSubmitOrderOptions,
+  ): Promise<TeePerpSubmitOrderResponse> {
+    return teePerpSubmitOrder(this.config_, params, opts);
+  }
+
+  /**
+   * Submit one native stop or take-profit order to `POST /v1/tee-perp/orders/submit-trigger`.
+   *
+   * Signing: pre-signed EIP-712 `HCPerpTriggerOrder` payload (`buildTeePerpTriggerOrderTypedData`).
+   */
+  teePerpSubmitTriggerOrder(
+    params: TeePerpSubmitTriggerOrderParameters,
+    opts?: TeePerpSubmitTriggerOrderOptions,
+  ): Promise<TeePerpSubmitTriggerOrderResponse> {
+    return teePerpSubmitTriggerOrder(this.config_, params, opts);
+  }
+
+  /**
+   * Submit a native order batch (scale, `normalTpsl` bracket, `positionTpsl`) to
+   * `POST /v1/tee-perp/orders/submit-batch`.
+   *
+   * Signing: pre-signed EIP-712 `HCPerpOrderBatch` payload (`buildTeePerpOrderBatchTypedData`).
+   */
+  teePerpSubmitOrderBatch(
+    params: TeePerpSubmitOrderBatchParameters,
+    opts?: TeePerpSubmitOrderBatchOptions,
+  ): Promise<TeePerpSubmitOrderBatchResponse> {
+    return teePerpSubmitOrderBatch(this.config_, params, opts);
+  }
+
+  /**
+   * Cancel a TEE perp order by cloid (`POST /v1/tee-perp/cancels/submit`).
+   *
+   * Signing: pre-signed EIP-712 `HLCancelByCloid` payload (`buildTeePerpCancelByCloidTypedData`).
+   */
+  teePerpCancelByCloid(
+    params: TeePerpCancelByCloidParameters,
+    opts?: TeePerpCancelByCloidOptions,
+  ): Promise<TeePerpCancelByCloidResponse> {
+    return teePerpCancelByCloid(this.config_, params, opts);
+  }
+
+  /**
+   * Cancel a TEE perp order by Hyperliquid order id (`POST /v1/tee-perp/cancels/submit-by-oid`).
+   *
+   * Signing: pre-signed EIP-712 `HLCancel` payload (`buildTeePerpCancelByOidTypedData`).
+   */
+  teePerpCancelByOid(
+    params: TeePerpCancelByOidParameters,
+    opts?: TeePerpCancelByOidOptions,
+  ): Promise<TeePerpCancelByOidResponse> {
+    return teePerpCancelByOid(this.config_, params, opts);
+  }
+
+  /**
+   * Change a market's leverage and cross/isolated mode (`POST /v1/tee-perp/leverage/submit`).
+   *
+   * Signing: pre-signed EIP-712 `HCPerpLeverageChange` payload (`buildTeePerpLeverageTypedData`).
+   */
+  teePerpUpdateLeverage(
+    params: TeePerpUpdateLeverageParameters,
+    opts?: TeePerpUpdateLeverageOptions,
+  ): Promise<TeePerpUpdateLeverageResponse> {
+    return teePerpUpdateLeverage(this.config_, params, opts);
+  }
+
+  /** Allocate the account's TEE API wallet and return the manager's `HLAddApiWallet` approval payload. */
+  teeApiWalletApprovalRequest(
+    params: TeeApiWalletApprovalRequestParameters,
+    opts?: TeeApiWalletApprovalRequestOptions,
+  ): Promise<TeeApiWalletApprovalRequestResponse> {
+    return teeApiWalletApprovalRequest(this.config_, params, opts);
+  }
+
+  /** Submit the manager-signed TEE API wallet approval. */
+  teeApiWalletApprovalSubmit(
+    params: TeeApiWalletApprovalSubmitParameters,
+    opts?: TeeApiWalletApprovalSubmitOptions,
+  ): Promise<TeeApiWalletApprovalSubmitResponse> {
+    return teeApiWalletApprovalSubmit(this.config_, params, opts);
+  }
 }
 
 export type { ExchangeConfig, ExchangeRequestOptions } from "./_methods/_base/mod.ts";
+export type {
+  AnyTeePerpResponse,
+  EngineSeq,
+  PerpRejectionReasonCode,
+  TeePerpCancelResponse,
+  TeePerpErrorCode,
+  TeePerpLeverageResponse,
+  TeePerpOrderBatchChildResponse,
+  TeePerpOrderBatchResponse,
+  TeePerpOrderResponse,
+  TeePerpOrderStage,
+  TeePerpVenueActionResponse,
+} from "./_methods/_base/teePerp.ts";
+export type {
+  TeeApiWalletApprovalProgress,
+  TeeApiWalletApprovalRequestOptions,
+  TeeApiWalletApprovalRequestParameters,
+  TeeApiWalletApprovalRequestResponse,
+  TeeApiWalletApprovalSubmitOptions,
+  TeeApiWalletApprovalSubmitParameters,
+  TeeApiWalletApprovalSubmitResponse,
+  TeeApiWalletApprovalTypedData,
+} from "./_methods/teeApiWalletApproval.ts";
+export type {
+  TeePerpSubmitOrderOptions,
+  TeePerpSubmitOrderParameters,
+  TeePerpSubmitOrderResponse,
+} from "./_methods/teePerpSubmitOrder.ts";
+export type {
+  TeePerpSubmitTriggerOrderOptions,
+  TeePerpSubmitTriggerOrderParameters,
+  TeePerpSubmitTriggerOrderResponse,
+} from "./_methods/teePerpSubmitTriggerOrder.ts";
+export type {
+  TeePerpSubmitOrderBatchOptions,
+  TeePerpSubmitOrderBatchParameters,
+  TeePerpSubmitOrderBatchResponse,
+} from "./_methods/teePerpSubmitOrderBatch.ts";
+export type {
+  TeePerpCancelByCloidOptions,
+  TeePerpCancelByCloidParameters,
+  TeePerpCancelByCloidResponse,
+} from "./_methods/teePerpCancelByCloid.ts";
+export type {
+  TeePerpCancelByOidOptions,
+  TeePerpCancelByOidParameters,
+  TeePerpCancelByOidResponse,
+} from "./_methods/teePerpCancelByOid.ts";
+export type {
+  TeePerpUpdateLeverageOptions,
+  TeePerpUpdateLeverageParameters,
+  TeePerpUpdateLeverageResponse,
+} from "./_methods/teePerpUpdateLeverage.ts";
 export type { OrderUpdateInfo, OrderUpdateMessage, OrderUpdateStatus } from "./_methods/_base/order.ts";
 export type {
   AcceptRfqQuoteOptions,
